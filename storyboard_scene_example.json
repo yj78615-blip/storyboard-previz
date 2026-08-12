@@ -1,0 +1,164 @@
+{
+  "schema_version": "1.1",
+
+  "story_meta": {
+    "title": "석양의 재회",
+    "logline": "해변에서 오래된 친구를 우연히 만난다.",
+    "aspect_ratio": "16:9"
+  },
+
+  "characters": [
+    {
+      "character_id": "yuna",
+      "kind": "adult",
+      "reference_description": "20대 후반 여성, 빨간 원피스, 긴 검은 머리",
+      "reference_image_path": null
+    },
+    {
+      "character_id": "minsu",
+      "kind": "adult",
+      "reference_description": "30대 초반 남성, 흰 셔츠와 베이지 팬츠",
+      "reference_image_path": null
+    }
+  ],
+
+  "locations": [
+    {
+      "location_id": "beach_sunset",
+      "description": "석양 무렵의 해변, 파도 낮음, 모래는 젖어 있음"
+    }
+  ],
+
+  "panels": [
+    {
+      "panel_id": "p001",
+      "source_image_path": null,
+      "location_id": "beach_sunset",
+      "camera_state": {
+        "shot_type": "wide",
+        "angle_type": "eye_level",
+        "dutch_tilt_deg": 0,
+        "focal_length_mm": null,
+        "estimated_pose": { "fov_deg": null, "confidence": null }
+      },
+      "characters_in_frame": [
+        {
+          "character_id": "yuna",
+          "final_role": "young woman in red dress walking on wet sand",
+          "pose_category": "walking",
+          "screen_position": { "x": 0.35, "y": 0.65 },
+          "estimated_transform": { "depth_m": 8.0, "yaw_deg": 30 }
+        }
+      ],
+      "props_in_frame": [
+        {
+          "name": "beach_umbrella_far",
+          "shape": "cylinder",
+          "final_role": "closed red beach umbrella stuck in sand",
+          "screen_position": { "x": 0.75, "y": 0.55 },
+          "estimated_transform": { "depth_m": 15.0, "yaw_deg": 0, "scale_m": [0.3, 0.3, 2.0] }
+        },
+        {
+          "name": "sand_ground",
+          "shape": "grid_plane",
+          "final_role": "wet sandy beach ground reflecting sunset",
+          "screen_position": { "x": 0.5, "y": 0.85 },
+          "estimated_transform": { "depth_m": 5.0, "yaw_deg": 0, "scale_m": [40, 40, 1] }
+        }
+      ],
+      "lighting": { "time_of_day": "golden_hour", "notes": "역광, 카메라 방향으로 낮은 각도" },
+      "seedance_prompt_fragment": "wide shot of beach at golden hour, young woman in red dress walking left-to-right on wet sand, distant red umbrella, warm rim light"
+    },
+    {
+      "panel_id": "p002",
+      "source_image_path": null,
+      "location_id": "beach_sunset",
+      "camera_state": {
+        "shot_type": "medium",
+        "angle_type": "eye_level",
+        "dutch_tilt_deg": 0,
+        "focal_length_mm": 50.0,
+        "estimated_pose": { "fov_deg": null, "confidence": null }
+      },
+      "characters_in_frame": [
+        {
+          "character_id": "yuna",
+          "final_role": "young woman in red dress, surprised expression",
+          "pose_category": "standing",
+          "screen_position": { "x": 0.3, "y": 0.5 },
+          "estimated_transform": { "depth_m": 3.0, "yaw_deg": 45 }
+        },
+        {
+          "character_id": "minsu",
+          "final_role": "man in white shirt facing the woman, warm smile",
+          "pose_category": "standing",
+          "screen_position": { "x": 0.7, "y": 0.5 },
+          "estimated_transform": { "depth_m": 3.2, "yaw_deg": -45 }
+        }
+      ],
+      "props_in_frame": [
+        {
+          "name": "sand_ground",
+          "shape": "grid_plane",
+          "final_role": "wet sandy beach ground",
+          "screen_position": { "x": 0.5, "y": 0.9 },
+          "estimated_transform": { "depth_m": 2.0, "yaw_deg": 0, "scale_m": [20, 20, 1] }
+        }
+      ],
+      "lighting": { "time_of_day": "golden_hour", "notes": "부드러운 정면광" },
+      "seedance_prompt_fragment": "medium two-shot at golden hour, woman in red dress and man in white shirt facing each other, sunset warm light"
+    }
+  ],
+
+  "shots": [
+    {
+      "shot_id": "s001",
+      "panel_ids": ["p001", "p002"],
+      "duration_sec": 8.0,
+      "continuous_take": true,
+      "camera_keyframes": [
+        {
+          "t_sec": 0.0,
+          "pos_world": [0.0, -12.0, 1.6],
+          "look_at_world": [0.0, 0.0, 1.6],
+          "easing": "EASE_IN_OUT",
+          "easing_curve": "CUBIC",
+          "hold": false,
+          "dutch_tilt_deg": 0,
+          "fov_deg": null,
+          "fov_confidence": null,
+          "focal_length_mm": null,
+          "shot_type": "wide"
+        },
+        {
+          "t_sec": 5.0,
+          "pos_world": [0.5, -4.5, 1.6],
+          "look_at_world": [0.5, 0.0, 1.6],
+          "easing": "EASE_OUT",
+          "easing_curve": "CUBIC",
+          "hold": false,
+          "dutch_tilt_deg": 0,
+          "focal_length_mm": 50.0
+        },
+        {
+          "t_sec": 8.0,
+          "pos_world": [0.5, -3.0, 1.6],
+          "look_at_world": [0.5, 0.0, 1.6],
+          "easing": "EASE_OUT",
+          "easing_curve": "SINE",
+          "hold": true,
+          "dutch_tilt_deg": 0,
+          "focal_length_mm": 50.0
+        }
+      ],
+      "shot_level_seedance_prompt": null
+    }
+  ],
+
+  "scene_meta": {
+    "fps": 24,
+    "sensor_width_mm": 36.0,
+    "min_distance_m": 0.4,
+    "fov_confidence_threshold": 0.3
+  }
+}

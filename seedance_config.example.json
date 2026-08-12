@@ -1,0 +1,41 @@
+{
+  "_note": "Seedance 2.5 White-Model Control 공식 문서 확인 후 TODO 값을 채우세요. TODO 남으면 실행 거부됩니다. 이 파일 복사해서 seedance_config.json으로 저장 후 편집하세요 (secret은 커밋 금지).",
+
+  "endpoint": "https://TODO/seedance/v2.5/generate",
+
+  "auth": {
+    "type": "bearer",
+    "env_var": "SEEDANCE_API_KEY",
+    "header_name": "Authorization",
+    "prefix": "Bearer "
+  },
+
+  "field_mapping": {
+    "prompt":            "prompt",
+    "duration_sec":      "duration",
+    "aspect_ratio":      "aspect_ratio",
+    "fps":               "fps",
+    "shot_id":           "external_id",
+    "blockout_fbx":      "reference_3d_file",
+    "blockout_obj":      "reference_3d_snapshot",
+    "blockout_camera":   "camera_track_file",
+    "reference_images":  "reference_images"
+  },
+
+  "upload": {
+    "mode": "multipart",
+    "presigned_endpoint": null,
+    "max_reference_images": 50
+  },
+
+  "polling": {
+    "mode": "sync",
+    "status_endpoint": null,
+    "job_id_field": "task_id",
+    "status_field": "status",
+    "success_values": ["succeeded", "completed", "done"],
+    "failure_values": ["failed", "error", "cancelled"],
+    "interval_sec": 5,
+    "timeout_sec": 600
+  }
+}

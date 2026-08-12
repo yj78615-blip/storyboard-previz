@@ -1,0 +1,33 @@
+# 산출물 (사용자별)
+out/
+runs/
+
+# 개인 스토리보드 인스턴스 (schema/example 만 트래킹)
+storyboard_scene_user.json
+
+# 실제 Seedance API 설정 (example 만 트래킹)
+seedance_config.json
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+*.egg-info/
+
+# Blender
+*.blend1
+*.blend2
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp

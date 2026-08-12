@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StoryboardScene v1.1",
+  "description": "2D 스토리보드 → 3D 프리비즈 → Seedance 2.5 파이프라인의 공용 데이터 스키마. v1.1: final_role 필수화, camera_keyframes 형식 확정, scene_meta 추가.",
+  "type": "object",
+  "required": ["schema_version", "story_meta", "characters", "locations", "panels", "shots", "scene_meta"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.1" },
+
+    "story_meta": {
+      "type": "object",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "title":        { "type": "string" },
+        "logline":      { "type": "string" },
+        "aspect_ratio": { "type": "string", "enum": ["16:9", "9:16", "1:1", "4:3", "2.39:1"], "default": "16:9" }
+      }
+    },
+
+    "characters": {
+      "type": "array",
+      "description": "Pass 1 (VLM) 레지스트리. 씬 전역에서 참조되는 캐릭터 목록.",
+      "items": {
+        "type": "object",
+        "required": ["character_id", "kind", "reference_description"],
+        "additionalProperties": false,
+        "properties": {
+          "character_id":          { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "kind":                  { "enum": ["adult", "child", "silhouette"] },
+          "reference_description": { "type": "string" },
+          "reference_image_path":  { "type": ["string", "null"], "description": "Seedance R2V 레퍼런스" }
+        }
+      }
+    },
+
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["location_id", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "location_id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+
+    "panels": {
+      "type": "array",
+      "description": "Pass 2 (VLM) 패널별 분석.",
+      "items": { "$ref": "#/$defs/panel" }
+    },
+
+    "shots": {
+      "type": "array",
+      "description": "Pass 3 (VLM) 그룹핑. Seedance 1회 생성 단위(≤30초).",
+      "items": { "$ref": "#/$defs/shot" }
+    },
+
+    "scene_meta": {
+      "type": "object",
+      "description": "camera_builder 및 렌더 파라미터 기본값.",
+      "required": ["fps"],
+      "additionalProperties": false,
+      "properties": {
+        "fps":                        { "type": "integer", "minimum": 12, "maximum": 60, "default": 24 },
+        "sensor_width_mm":            { "type": "number",  "minimum": 1,  "default": 36.0 },
+        "min_distance_m":             { "type": "number",  "minimum": 0,  "default": 0.4 },
+        "fov_confidence_threshold":   { "type": "number",  "minimum": 0, "maximum": 1, "default": 0.3 }
+      }
+    }
+  },
+
+  "$defs": {
+    "panel": {
+      "type": "object",
+      "required": ["panel_id", "location_id", "camera_state", "characters_in_frame", "props_in_frame"],
+      "additionalProperties": false,
+      "properties": {
+        "panel_id":            { "type": "string", "pattern": "^p[0-9]{3,}$" },
+        "source_image_path":   { "type": ["string", "null"] },
+        "location_id":         { "type": "string" },
+        "camera_state":        { "$ref": "#/$defs/camera_state" },
+        "characters_in_frame": { "type": "array", "items": { "$ref": "#/$defs/char_in_frame" } },
+        "props_in_frame":      { "type": "array", "items": { "$ref": "#/$defs/prop_in_frame" } },
+        "lighting":            { "$ref": "#/$defs/lighting" },
+        "seedance_prompt_fragment": { "type": ["string", "null"], "description": "이 패널의 프롬프트 조각. Pass 3에서 병합됨." }
+      }
+    },
+
+    "camera_state": {
+      "type": "object",
+      "required": ["shot_type", "angle_type"],
+      "additionalProperties": false,
+      "properties": {
+        "shot_type": {
+          "enum": ["extreme_wide", "wide", "medium_wide", "medium", "medium_close", "close", "extreme_close"]
+        },
+        "angle_type": {
+          "enum": ["eye_level", "low_angle", "high_angle", "birds_eye", "worms_eye", "dutch"]
+        },
+        "dutch_tilt_deg":   { "type": "number", "default": 0 },
+        "focal_length_mm":  { "type": ["number", "null"], "description": "VLM 추정 초점거리" },
+        "estimated_pose": {
+          "type": "object",
+          "description": "DA3 보강 결과. depth_enrichment/enrich_scene.py가 채움. confidence < scene_meta.fov_confidence_threshold이면 무시됨.",
+          "additionalProperties": false,
+          "properties": {
+            "fov_deg":    { "type": ["number", "null"], "minimum": 1, "maximum": 179 },
+            "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+
+    "char_in_frame": {
+      "type": "object",
+      "required": ["character_id", "final_role", "screen_position"],
+      "additionalProperties": false,
+      "properties": {
+        "character_id":   { "type": "string", "description": "characters[] 레지스트리 참조" },
+        "final_role":     { "type": "string", "minLength": 1, "description": "Rule 3. Seedance 프롬프트에서 이 매니큰이 치환될 최종 대상." },
+        "pose_category":  { "enum": ["standing", "sitting", "walking", "running", "lying", "kneeling", "other"], "default": "standing" },
+        "screen_position": { "$ref": "#/$defs/screen_pos" },
+        "estimated_transform": { "$ref": "#/$defs/est_transform" }
+      }
+    },
+
+    "prop_in_frame": {
+      "type": "object",
+      "required": ["name", "shape", "final_role", "screen_position"],
+      "additionalProperties": false,
+      "properties": {
+        "name":       { "type": "string" },
+        "shape": {
+          "enum": ["cube", "sphere", "cylinder", "asymmetric_wedge", "l_shape", "grid_plane"],
+          "description": "blender-previz 스킬의 6종 shape 카탈로그. 회전 판독이 필요하면 asymmetric_wedge 또는 l_shape."
+        },
+        "final_role": { "type": "string", "minLength": 1 },
+        "screen_position": { "$ref": "#/$defs/screen_pos" },
+        "estimated_transform": { "$ref": "#/$defs/est_transform_prop" }
+      }
+    },
+
+    "screen_pos": {
+      "type": "object",
+      "description": "패널 이미지 좌상단 원점, 정규화(0..1). x는 좌→우, y는 상→하.",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "est_transform": {
+      "type": "object",
+      "description": "DA3 또는 휴리스틱으로 추정된 월드 트랜스폼(캐릭터용). placement.py가 이 값으로 pos_world 계산.",
+      "additionalProperties": false,
+      "properties": {
+        "depth_m": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0,
+          "description": "카메라로부터의 거리(미터). DA3 미보강 시 null → 휴리스틱 폴백."
+        },
+        "yaw_deg": { "type": "number", "default": 0 }
+      }
+    },
+
+    "est_transform_prop": {
+      "type": "object",
+      "description": "소품용. est_transform + scale_m.",
+      "additionalProperties": false,
+      "properties": {
+        "depth_m": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "yaw_deg": { "type": "number", "default": 0 },
+        "scale_m": {
+          "type": "array",
+          "items": { "type": "number", "exclusiveMinimum": 0 },
+          "minItems": 3, "maxItems": 3,
+          "default": [1, 1, 1]
+        }
+      }
+    },
+
+    "lighting": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "time_of_day": { "enum": ["dawn", "morning", "midday", "afternoon", "golden_hour", "dusk", "night", "unknown"] },
+        "notes":       { "type": "string" }
+      }
+    },
+
+    "shot": {
+      "type": "object",
+      "required": ["shot_id", "panel_ids", "duration_sec", "camera_keyframes"],
+      "additionalProperties": false,
+      "properties": {
+        "shot_id":        { "type": "string", "pattern": "^s[0-9]{3,}$" },
+        "panel_ids":      { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "duration_sec":   { "type": "number", "exclusiveMinimum": 0, "maximum": 30, "description": "Seedance 2.5 네이티브 한도." },
+        "continuous_take": { "type": "boolean", "default": true },
+        "camera_keyframes": {
+          "type": "array",
+          "minItems": 1,
+          "items":   { "$ref": "#/$defs/camera_keyframe" }
+        },
+        "shot_level_seedance_prompt": { "type": ["string", "null"] }
+      }
+    },
+
+    "camera_keyframe": {
+      "type": "object",
+      "description": "camera_builder.build_camera가 소비하는 형식.",
+      "required": ["t_sec", "pos_world", "look_at_world", "easing"],
+      "additionalProperties": false,
+      "properties": {
+        "t_sec":         { "type": "number", "minimum": 0 },
+        "pos_world":     { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "look_at_world": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "easing":        { "enum": ["LINEAR", "EASE_IN", "EASE_OUT", "EASE_IN_OUT"] },
+        "easing_curve":  { "enum": ["SINE", "CUBIC", "BEZIER"] },
+        "hold":          { "type": "boolean", "default": false },
+        "dutch_tilt_deg":{ "type": "number", "default": 0 },
+        "fov_deg":         { "type": ["number", "null"] },
+        "fov_confidence":  { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "focal_length_mm": { "type": ["number", "null"] },
+        "shot_type": {
+          "type": ["string", "null"],
+          "enum": ["extreme_wide", "wide", "medium_wide", "medium", "medium_close", "close", "extreme_close", null]
+        }
+      }
+    }
+  }
+}
