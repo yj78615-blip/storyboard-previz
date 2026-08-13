@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.1",
+
+  "story_meta": {
+    "title": "Winnebago Journey 34N 콕핏 · 운전 중 173cm 남성",
+    "logline": "Winnebago Journey 34N 콕핏 후방 3/4 elevated. 실측·차종별 외관 특성 반영.",
+    "aspect_ratio": "16:9"
+  },
+
+  "characters": [
+    {
+      "character_id": "driver_male_173",
+      "kind": "adult",
+      "reference_description": "30대 남성, 신장 173cm, 캐주얼 셔츠와 청바지, 짧은 검은 머리, 운전 자세로 착석",
+      "reference_image_path": null
+    }
+  ],
+
+  "locations": [
+    {
+      "location_id": "winnebago_journey_34n_cockpit",
+      "description": "Winnebago Journey 34N (2025), Class A 디젤 푸셔, Freightliner XCM chassis. 실측: 전장 10.82m, 폭 2.58m, 전고 4.04m, 실내폭 2.45m, 실내고 2.13m. 콕핏은 앞쪽 캡이 좌우로 감싸는 composite front-end로, 대형 원피스 파노라마 커브드 앞유리(에어로다이내믹 rake)가 특징. 6-way 전동 캡틴 시트 2개(운전·조수). 대시보드에 12.3인치 LCD 인포테인먼트, 디지털 계기판. TRW 틸트/텔레스코픽 스티어링 컬럼."
+    }
+  ],
+
+  "panels": [
+    {
+      "panel_id": "p001",
+      "source_image_path": null,
+      "location_id": "winnebago_journey_34n_cockpit",
+      "camera_state": {
+        "shot_type": "medium_wide",
+        "angle_type": "high_angle",
+        "dutch_tilt_deg": 0,
+        "focal_length_mm": 28.0,
+        "estimated_pose": { "fov_deg": null, "confidence": null }
+      },
+      "characters_in_frame": [
+        {
+          "character_id": "driver_male_173",
+          "final_role": "173cm man seated in Winnebago Journey 34N driver's 6-way power captain chair, hands on TRW tilt/telescopic steering wheel, upright driving posture, eyes forward toward road",
+          "pose_category": "sitting",
+          "screen_position": { "x": 0.410, "y": 0.842 },
+          "estimated_transform": { "depth_m": 4.100, "yaw_deg": 0 }
+        }
+      ],
+      "props_in_frame": [
+        {
+          "name": "cabin_floor",
+          "shape": "grid_plane",
+          "final_role": "hard vinyl plank cabin floor of the Winnebago Journey motorhome, cockpit area",
+          "screen_position": { "x": 0.512, "y": 0.883 },
+          "estimated_transform": { "depth_m": 3.883, "yaw_deg": 0, "scale_m": [2.45, 3.0, 1] }
+        },
+        {
+          "name": "driver_seat",
+          "shape": "l_shape",
+          "final_role": "Winnebago 6-way power captain chair, dark leather, integrated headrest and armrests",
+          "screen_position": { "x": 0.410, "y": 0.842 },
+          "estimated_transform": { "depth_m": 4.100, "yaw_deg": 0, "scale_m": [0.55, 0.6, 1.2] }
+        },
+        {
+          "name": "passenger_seat",
+          "shape": "l_shape",
+          "final_role": "Winnebago 6-way power captain chair, dark leather, matching driver seat",
+          "screen_position": { "x": 0.606, "y": 0.969 },
+          "estimated_transform": { "depth_m": 3.585, "yaw_deg": 0, "scale_m": [0.55, 0.6, 1.2] }
+        },
+        {
+          "name": "dashboard",
+          "shape": "cube",
+          "final_role": "Winnebago Journey DriveTech dashboard with 12.3-inch LCD touchscreen, digital instrument cluster, HVAC vents",
+          "screen_position": { "x": 0.600, "y": 0.583 },
+          "estimated_transform": { "depth_m": 4.346, "yaw_deg": 0, "scale_m": [1.6, 0.5, 0.5] }
+        },
+        {
+          "name": "steering_wheel",
+          "shape": "cylinder",
+          "final_role": "black leather TRW tilt/telescopic steering wheel with center hub",
+          "screen_position": { "x": 0.498, "y": 0.494 },
+          "estimated_transform": { "depth_m": 4.370, "yaw_deg": 0, "scale_m": [0.38, 0.38, 0.06] }
+        },
+        {
+          "name": "windshield",
+          "shape": "cube",
+          "final_role": "one-piece large curved panoramic windshield, aerodynamically raked backward, wrapping composite front-end",
+          "screen_position": { "x": 0.642, "y": 0.399 },
+          "estimated_transform": { "depth_m": 4.657, "yaw_deg": 0, "scale_m": [2.45, 0.05, 1.6] }
+        },
+        {
+          "name": "ceiling",
+          "shape": "cube",
+          "final_role": "cabin ceiling panel at 2.13m interior height, recessed LED lighting",
+          "screen_position": { "x": 0.514, "y": 0.058 },
+          "estimated_transform": { "depth_m": 3.331, "yaw_deg": 0, "scale_m": [2.45, 3.0, 0.05] }
+        },
+        {
+          "name": "left_wall",
+          "shape": "cube",
+          "final_role": "left interior wall of the cockpit, composite front-end wrap with side window",
+          "screen_position": { "x": 0.317, "y": 0.444 },
+          "estimated_transform": { "depth_m": 4.231, "yaw_deg": 0, "scale_m": [0.05, 3.0, 2.13] }
+        },
+        {
+          "name": "rear_partition",
+          "shape": "cube",
+          "final_role": "back of cockpit area transitioning to living room, partial wall with entry step",
+          "screen_position": { "x": 0.354, "y": 0.624 },
+          "estimated_transform": { "depth_m": 2.714, "yaw_deg": 0, "scale_m": [2.45, 0.05, 2.13] }
+        }
+      ],
+      "lighting": { "time_of_day": "midday", "notes": "커브드 파노라마 앞유리로 정면 자연광 대량 유입" },
+      "seedance_prompt_fragment": "elevated 3/4 rear view of Winnebago Journey 34N Class A diesel pusher motorhome cockpit interior, 173cm man in driving posture in 6-way power captain chair, one-piece curved panoramic windshield, DriveTech dashboard with 12.3-inch touchscreen, cinematic natural midday light"
+    }
+  ],
+
+  "shots": [
+    {
+      "shot_id": "s001",
+      "panel_ids": ["p001"],
+      "duration_sec": 6.0,
+      "continuous_take": false,
+      "camera_keyframes": [
+        {
+          "t_sec": 0.0,
+          "pos_world": [3.2, -2.8, 2.3],
+          "look_at_world": [-0.4, 0.8, 1.1],
+          "easing": "EASE_IN_OUT",
+          "easing_curve": "CUBIC",
+          "hold": false,
+          "dutch_tilt_deg": 0,
+          "fov_deg": null,
+          "fov_confidence": null,
+          "focal_length_mm": 28.0,
+          "shot_type": "wide"
+        },
+        {
+          "t_sec": 6.0,
+          "pos_world": [1.4, -1.5, 1.9],
+          "look_at_world": [-0.2, 1.3, 1.0],
+          "easing": "EASE_OUT",
+          "easing_curve": "CUBIC",
+          "hold": true,
+          "dutch_tilt_deg": 0,
+          "focal_length_mm": 28.0,
+          "shot_type": "medium_wide"
+        }
+      ],
+      "shot_level_seedance_prompt": "6-second static elevated rear 3/4 view of Winnebago Journey 34N Class A diesel pusher motorhome cockpit interior. A 173cm man in casual shirt and jeans sits in the driver's 6-way power captain chair, hands on the TRW tilt/telescopic steering wheel, upright driving posture, eyes forward. Visible: matching passenger captain chair on his right, hard vinyl plank cabin floor, ceiling with recessed LEDs at 2.13m interior height, one-piece curved panoramic windshield ahead receiving soft midday daylight, DriveTech dashboard with 12.3-inch LCD touchscreen and digital instrument cluster. Composite front-end wrapping around the cockpit sides. Camera fixed at 2m height behind and right of driver, focal 28mm wide. Natural daytime lighting, cinematic composition, calm mood. No camera movement."
+    }
+  ],
+
+  "scene_meta": {
+    "fps": 24,
+    "sensor_width_mm": 36.0,
+    "min_distance_m": 0.4,
+    "fov_confidence_threshold": 0.3
+  }
+}
