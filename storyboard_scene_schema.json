@@ -87,6 +87,7 @@
         "characters_in_frame": { "type": "array", "items": { "$ref": "#/$defs/char_in_frame" } },
         "props_in_frame":      { "type": "array", "items": { "$ref": "#/$defs/prop_in_frame" } },
         "lighting":            { "$ref": "#/$defs/lighting" },
+        "sound_notes":         { "type": ["string", "null"], "description": "이 패널의 음향 지시 (예: '파도소리, 갈매기 울음'). Seedance Audio 절로 병합됨." },
         "seedance_prompt_fragment": { "type": ["string", "null"], "description": "이 패널의 프롬프트 조각. Pass 3에서 병합됨." }
       }
     },

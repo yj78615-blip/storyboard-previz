@@ -33,15 +33,31 @@ TIME_OF_DAY_DESC = {
 # 최대 레퍼런스 이미지 수. Seedance 2.5는 50까지 지원한다고 알려짐(2026-08 시점).
 MAX_REFERENCE_IMAGES = 50
 
+DEFAULT_AUDIO = "natural ambient sound matching the location, no dialogue, no music"
+
+NEGATIVE_CONSTRAINTS = (
+    "No subtitles or on-screen text. No background music unless explicitly "
+    "described in Audio above."
+)
+
+
+def _shot_type_label(shot_type: str | None) -> str:
+    if not shot_type:
+        return ""
+    return shot_type.replace("_", " ") + " shot"
+
 
 def _index_by_id(items: list[dict], key: str) -> dict[str, dict]:
     return {it[key]: it for it in items}
 
 
-def _panel_t_estimate(panel_index: int, panel_count: int, duration_sec: float) -> float:
+def _panel_t_range(panel_index: int, panel_count: int, duration_sec: float) -> tuple[float, float]:
+    """패널이 차지하는 등분 구간 [start, end)를 초 단위로 반환."""
     if panel_count <= 1:
-        return 0.0
-    return round((panel_index / (panel_count - 1)) * duration_sec, 2)
+        return 0.0, duration_sec
+    start = round((panel_index / panel_count) * duration_sec, 2)
+    end = round(((panel_index + 1) / panel_count) * duration_sec, 2)
+    return start, end
 
 
 def _collect_lighting(panels: list[dict]) -> str:
@@ -67,6 +83,16 @@ def _collect_lighting(panels: list[dict]) -> str:
     return ". ".join(parts)
 
 
+def _collect_audio(panels: list[dict]) -> str:
+    """패널별 sound_notes를 하나의 Audio 절로 병합. 없으면 빈 문자열."""
+    notes = []
+    for p in panels:
+        n = p.get("sound_notes")
+        if n and n not in notes:
+            notes.append(n)
+    return "; ".join(notes)
+
+
 def _collect_location_line(panels: list[dict], locations: list[dict]) -> str:
     loc_by_id = _index_by_id(locations, "location_id")
     seen = []
@@ -80,9 +106,14 @@ def _collect_location_line(panels: list[dict], locations: list[dict]) -> str:
     return " ->".join(descs) if len(descs) > 1 else descs[0]
 
 
-def _subject_dictionary(panels: list[dict], characters: list[dict]) -> list[str]:
+def _subject_dictionary(
+    panels: list[dict],
+    characters: list[dict],
+    ref_tag_by_char: dict[str, str] | None = None,
+) -> list[str]:
     """블록아웃의 화이트 오브젝트 ->최종 치환 대상 매핑 문장 리스트."""
     char_reg = _index_by_id(characters, "character_id")
+    ref_tag_by_char = ref_tag_by_char or {}
     lines: list[str] = []
     seen_chars: set[str] = set()
     seen_props: set[str] = set()
@@ -95,7 +126,9 @@ def _subject_dictionary(panels: list[dict], characters: list[dict]) -> list[str]
             seen_chars.add(cid)
             kind = char_reg.get(cid, {}).get("kind", "adult")
             pose = c.get("pose_category", "standing")
-            lines.append(f"- mannequin `{cid}` ({kind}, {pose}) ->{c['final_role']}")
+            tag = ref_tag_by_char.get(cid)
+            role = f"{tag} {c['final_role']}" if tag else c["final_role"]
+            lines.append(f"- mannequin `{cid}` ({kind}, {pose}) ->{role}")
 
         for pr in panel.get("props_in_frame", []):
             name = pr["name"]
@@ -113,8 +146,10 @@ def _panel_timeline(panels: list[dict], duration_sec: float) -> list[str]:
         frag = p.get("seedance_prompt_fragment")
         if not frag:
             continue
-        t = _panel_t_estimate(i, n, duration_sec)
-        out.append(f"- t~{t:.1f}s: {frag}")
+        start, end = _panel_t_range(i, n, duration_sec)
+        label = _shot_type_label(p.get("camera_state", {}).get("shot_type"))
+        tag = f" ({label})" if label else ""
+        out.append(f"- [{start:.1f}-{end:.1f}s]{tag}: {frag}")
     return out
 
 
@@ -141,11 +176,20 @@ def _reference_images(scene: dict, panels: list[dict]) -> list[dict]:
     return refs
 
 
-def build_prompt(scene: dict, shot_id: str) -> str:
+def build_prompt(
+    scene: dict,
+    shot_id: str,
+    reference_images: list[dict] | None = None,
+) -> str:
     shots_by_id = _index_by_id(scene["shots"], "shot_id")
     shot = shots_by_id[shot_id]
     panels_by_id = _index_by_id(scene["panels"], "panel_id")
     panels = [panels_by_id[pid] for pid in shot["panel_ids"]]
+
+    # 사용자가 shot_level_seedance_prompt를 명시했으면 우선 사용 (조립 스킵)
+    override = shot.get("shot_level_seedance_prompt")
+    if override:
+        return override
 
     aspect = scene.get("story_meta", {}).get("aspect_ratio", "16:9")
     duration = float(shot["duration_sec"])
@@ -168,7 +212,13 @@ def build_prompt(scene: dict, shot_id: str) -> str:
         lines.append("Scene description across the shot timeline:")
         lines.extend(timeline)
 
-    subj = _subject_dictionary(panels, scene["characters"])
+    if reference_images is None:
+        reference_images = _reference_images(scene, panels)
+    ref_tag_by_char = {
+        r["character_id"]: f"@Image{i + 1}" for i, r in enumerate(reference_images)
+    }
+
+    subj = _subject_dictionary(panels, scene["characters"], ref_tag_by_char)
     if subj:
         lines.append("")
         lines.append("White-model objects in the uploaded 3D blockout must be interpreted as:")
@@ -181,10 +231,10 @@ def build_prompt(scene: dict, shot_id: str) -> str:
         "placements. Replace white-model surfaces only with the styles described above."
     )
 
-    # 사용자가 shot_level_seedance_prompt를 명시했으면 우선 사용 (덮어쓰기)
-    override = shot.get("shot_level_seedance_prompt")
-    if override:
-        return override
+    audio_line = _collect_audio(panels)
+    lines.append("")
+    lines.append(f"Audio: {audio_line if audio_line else DEFAULT_AUDIO}.")
+    lines.append(NEGATIVE_CONSTRAINTS)
 
     return "\n".join(lines)
 
@@ -198,19 +248,20 @@ def build_payload(
     shot = _index_by_id(scene["shots"], "shot_id")[shot_id]
     blockout_dir = Path(blockout_dir)
     panels = [_index_by_id(scene["panels"], "panel_id")[pid] for pid in shot["panel_ids"]]
+    refs = _reference_images(scene, panels)
 
     return {
         "shot_id": shot_id,
         "duration_sec": float(shot["duration_sec"]),
         "aspect_ratio": scene.get("story_meta", {}).get("aspect_ratio", "16:9"),
         "fps": int(scene["scene_meta"].get("fps", 24)),
-        "prompt": build_prompt(scene, shot_id),
+        "prompt": build_prompt(scene, shot_id, reference_images=refs),
         "blockout": {
             "fbx":          str(blockout_dir / f"{shot_id}.fbx"),
             "obj":          str(blockout_dir / f"{shot_id}.obj"),
             "camera_track": str(blockout_dir / f"{shot_id}_camera.json"),
         },
-        "reference_images": _reference_images(scene, panels),
+        "reference_images": refs,
         "_meta": {
             "generator": "storyboard_previz.seedance_builder",
             "schema_version": scene.get("schema_version"),
@@ -273,18 +324,25 @@ def _demo():
     assert "grid_plane `sand_ground`" in prompt
     # 카메라 지시
     assert "Follow the camera motion" in prompt
+    # 오디오 절 (sound_notes 병합)
+    assert "Audio:" in prompt
+    assert "갈매기" in prompt
+    # 네거티브 제약
+    assert "No subtitles" in prompt
 
     # override 우선순위
     scene_override = json.loads(json.dumps(scene))
     scene_override["shots"][0]["shot_level_seedance_prompt"] = "OVERRIDDEN"
     assert build_prompt(scene_override, "s001") == "OVERRIDDEN"
 
-    # 패널 타임라인: 2패널이면 [0.0s, 8.0s]에 배치
+    # 패널 타임라인: 2패널 8초면 [0.0-4.0s], [4.0-8.0s]로 등분
     prompt_lines = prompt.split("\n")
-    timeline = [l for l in prompt_lines if l.startswith("- t~")]
+    timeline = [l for l in prompt_lines if l.startswith("- [")]
     assert len(timeline) == 2
-    assert "t~0.0s" in timeline[0]
-    assert "t~8.0s" in timeline[1]
+    assert "[0.0-4.0s]" in timeline[0]
+    assert "(wide shot)" in timeline[0]
+    assert "[4.0-8.0s]" in timeline[1]
+    assert "(medium shot)" in timeline[1]
 
     # payload 형태
     payload = build_payload(scene, "s001", "/tmp/out")
@@ -305,6 +363,9 @@ def _demo():
     assert len(payload2["reference_images"]) == 2
     ids = {r["character_id"] for r in payload2["reference_images"]}
     assert ids == {"yuna", "minsu"}
+    # 레퍼런스가 있으면 프롬프트 본문에 @ImageN으로 인라인 바인딩됨
+    assert "@Image1 young woman in red dress" in payload2["prompt"]
+    assert "@Image2 man in white shirt" in payload2["prompt"]
 
     # dedup: 같은 캐릭터가 두 패널 모두 등장해도 한 번만
     scene_dup = json.loads(json.dumps(scene_with_ref))

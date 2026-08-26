@@ -67,6 +67,7 @@
         }
       ],
       "lighting": { "time_of_day": "golden_hour", "notes": "역광, 카메라 방향으로 낮은 각도" },
+      "sound_notes": "잔잔한 파도 소리, 멀리 갈매기 울음",
       "seedance_prompt_fragment": "wide shot of beach at golden hour, young woman in red dress walking left-to-right on wet sand, distant red umbrella, warm rim light"
     },
     {
@@ -106,6 +107,7 @@
         }
       ],
       "lighting": { "time_of_day": "golden_hour", "notes": "부드러운 정면광" },
+      "sound_notes": "파도 소리, 옷깃 스치는 소리",
       "seedance_prompt_fragment": "medium two-shot at golden hour, woman in red dress and man in white shirt facing each other, sunset warm light"
     }
   ],
