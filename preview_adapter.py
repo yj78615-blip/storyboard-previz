@@ -56,6 +56,8 @@ HUMAN_XY_SCALE = 0.15  # 30cm 폭 근사
 
 BLENDER_EXE = r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
 SKILL_PREVIZ_PY = Path.home() / ".claude" / "skills" / "blender-previz" / "scripts" / "previz.py"
+# blender-previz 스킬이 없는 환경(대부분)을 위한 내장 대체 렌더러. 같은 spec 포맷을 소비함.
+FALLBACK_PREVIZ_PY = _HERE / "preview_render.py"
 
 
 # ---- 변환 ----------------------------------------------------------------
@@ -209,12 +211,17 @@ def _render_via_skill(spec_path: Path, out_mp4: Path, blender: str) -> int:
     if not Path(blender).exists():
         print(f"[error] blender not found: {blender}", file=sys.stderr)
         return 1
-    if not SKILL_PREVIZ_PY.exists():
+    if SKILL_PREVIZ_PY.exists():
+        previz_py = SKILL_PREVIZ_PY
+    elif FALLBACK_PREVIZ_PY.exists():
+        print(f"[info] blender-previz 스킬 없음 - 내장 {FALLBACK_PREVIZ_PY.name}로 대체")
+        previz_py = FALLBACK_PREVIZ_PY
+    else:
         print(f"[error] skill previz.py not found: {SKILL_PREVIZ_PY}", file=sys.stderr)
         return 1
     out_mp4.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
-        blender, "--background", "--python", str(SKILL_PREVIZ_PY),
+        blender, "--background", "--python", str(previz_py),
         "--", "--spec", str(spec_path), "--out", str(out_mp4),
     ]
     print("[render]", " ".join(cmd))
