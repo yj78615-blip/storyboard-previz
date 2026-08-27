@@ -32,6 +32,7 @@ blender-previz 스킬의 **3대 원칙** 을 파이프라인 코드에 내재화
 storyboard_previz/
 ├── storyboard_scene_schema.json     ← 씬 JSON 스키마 (Draft-07, v1.1)
 ├── storyboard_scene_example.json    ← 검증된 예시 씬 (해변, 8초, 2 패널)
+├── tools/pdf_panel_export/          ← 경로 0: PDF 스토리보드 → 컷별 PNG 패널 추출 (Windows GUI)
 ├── blender_previz/                  ← 경로 A: Seedance 제출용 FBX 파이프라인
 │   ├── main.py                          CLI 엔트리포인트
 │   ├── assembly.py                      샷 조립 (캐릭터 · 소품 · 카메라)
@@ -110,6 +111,8 @@ python preview_adapter.py --scene storyboard_scene_example.json --shot s001 \
 ## 자기 스토리보드로 씬 만들기
 
 ### 1. 스토리보드 촬영/스캔 → 각 컷을 하나의 파일에 정리
+
+CUT/PICTURE/MEMO 형식의 스토리보드 PDF가 있다면, [`tools/pdf_panel_export`](./tools/pdf_panel_export/README.md)로 컷마다 PICTURE 영역만 `1920x1080` PNG로 잘라 정리할 수 있다. 이렇게 뽑은 이미지를 아래 `panels[]` 작성 시 참고 이미지로 쓴다.
 
 ### 2. `storyboard_scene_example.json` 을 복사해서 편집
 

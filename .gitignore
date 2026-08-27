@@ -31,3 +31,8 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# PyInstaller build artifacts (tools/pdf_panel_export)
+tools/pdf_panel_export/build/
+tools/pdf_panel_export/dist/
+tools/pdf_panel_export/*.spec
