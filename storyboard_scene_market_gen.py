@@ -40,41 +40,50 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO / "blender_previz"))
 
+from assumptions import A, report, unverified, write_sidecar  # noqa: E402
 from placement import screen_to_world_at_depth  # noqa: E402
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  ASSUMPTIONS — 한옥 민가 치수 (실측 자료 없음. 전부 가정값)
-#  조선 후기 일반 민가 기준. 실제 도면 확보 시 이 블록만 교체하면 전체가 따라간다.
+#  가정값 — assumptions.A() 로 등록한다. source 는 키워드 전용 필수 인자라,
+#  출처를 모르면 source=None 이라고 명시할 수밖에 없고 그 값은 실행할 때마다
+#  '미확인' 목록에 떠서 주석 뒤에 숨지 못한다. 자세한 이유는 assumptions.py 참조.
+#
+#  실측 도면이 생기면 미확인 항목부터 교체한다. (motorhome 씬처럼 도면이 있으면
+#  그 값이 사실이고, 이 블록은 도면이 없을 때의 대체물일 뿐이다.)
 # ═══════════════════════════════════════════════════════════════════════════
-KAN          = 2.4    # 1칸(주간거리). 민가 8자 기준
-# 기둥 단면: 민가는 반드시 방주(方柱, 사각기둥). 원주(圓柱)는 격이 높아 정전·큰 건물에 쓰였고
-# 조선시대 민가에는 원기둥 사용이 법으로 금지되었다. → shape 은 cylinder 가 아니라 cube.
-COL_D        = 0.21   # 기둥 한 변. 민가 6~8치의 중간값
-COL_H        = 2.4    # 기둥 높이(초석 상단~처마도리)
-FOOT_D       = 0.45   # 초석(덤벙주초) 직경
-FOOT_H       = 0.25   # 초석 노출 높이
-STYLO_H      = 0.45   # 기단 높이. 민가 1~2단
-STYLO_MARGIN = 0.6    # 기단이 기둥열 밖으로 나온 폭
-EAVE         = 1.05   # 처마 내밀기. 민가 0.9~1.2m
-TILE_ROOF_H  = 1.5    # 기와지붕 처마~용마루
-DOOR_T       = 0.08   # 분합문 두께
-MARU_T       = 0.12   # 대청마루 널 두께
-# 툇간 깊이 = 전면 평주와 안쪽 고주 사이 거리. 문헌상 "반칸 정도(3~4자)" =
-# 0.91~1.21m. 여기서는 하한인 3자(0.909m)를 택했다 - 소박한 민가 기준.
-# 툇마루 자체는 남부지방 一자형 민가(부엌·방·대청마루·툇마루)의 보편적 요소.
-TOEN_D       = 0.9
+COL_D = A("COL_D", 0.21, "m", "기둥 한 변(방주)",
+          source="민가는 방주(사각기둥)만 허용 — 원주는 격이 높아 정전·큰 건물용이고 "
+                 "조선시대 민가엔 법으로 금지. 단면은 6~8치의 중간값")
+TOEN_D = A("TOEN_D", 0.9, "m", "툇간 깊이(툇기둥~분합문)",
+           source="전면 평주와 안쪽 고주 사이 '반칸 정도(3~4자)'=0.91~1.21m 중 "
+                  "하한인 3자(0.909m). 툇마루는 남부지방 一자형 민가의 보편 요소")
 
-THATCH_EAVE    = 0.7   # 초가 처마는 짧다
-THATCH_ROOF_H  = 1.8   # 볏짚이 두꺼워 지붕 덩어리가 크다
-THATCH_WALL_H  = 2.1   # 흙벽. 기와집보다 낮다
-THATCH_STYLO_H = 0.3
+KAN          = A("KAN", 2.4, "m", "1칸(주간거리)", source=None)
+COL_H        = A("COL_H", 2.4, "m", "기둥 높이(초석 상단~처마도리)", source=None)
+FOOT_D       = A("FOOT_D", 0.45, "m", "초석(덤벙주초) 직경", source=None)
+FOOT_H       = A("FOOT_H", 0.25, "m", "초석 노출 높이", source=None)
+STYLO_H      = A("STYLO_H", 0.45, "m", "기단 높이", source=None)
+STYLO_MARGIN = A("STYLO_MARGIN", 0.6, "m", "기단이 기둥열 밖으로 나온 폭", source=None)
+EAVE         = A("EAVE", 1.05, "m", "처마 내밀기", source=None)
+TILE_ROOF_H  = A("TILE_ROOF_H", 1.5, "m", "기와지붕 처마~용마루", source=None)
+DOOR_T       = A("DOOR_T", 0.08, "m", "분합문 두께", source=None)
+MARU_T       = A("MARU_T", 0.12, "m", "마루 널 두께", source=None)
 
-WALL_H, WALL_T = 1.35, 0.45   # 돌담. 민가 1.2~1.5m
+THATCH_EAVE    = A("THATCH_EAVE", 0.7, "m", "초가 처마 내밀기(기와보다 짧다)", source=None)
+THATCH_ROOF_H  = A("THATCH_ROOF_H", 1.8, "m", "초가 지붕 두께(볏짚이라 두껍다)", source=None)
+THATCH_WALL_H  = A("THATCH_WALL_H", 2.1, "m", "초가 흙벽 높이", source=None)
+THATCH_STYLO_H = A("THATCH_STYLO_H", 0.3, "m", "초가 기단 높이", source=None)
 
-# 규모 (칸 수) — 참고 이미지에서 읽은 값이라 이것도 가정
-EAST_BAYS_W, EAST_BAYS_D = 4, 2     # 우측 채: 정면 4칸
-WEST_BAYS_W, WEST_BAYS_D = 3, 2     # 좌측 채: 정면 3칸
-CHOGA_BAYS_W, CHOGA_BAYS_D = 3, 1.5 # 초가삼간
+WALL_H = A("WALL_H", 1.35, "m", "돌담 높이", source=None)
+WALL_T = A("WALL_T", 0.45, "m", "돌담 두께", source=None)
+
+# 규모 — 참고 이미지를 눈으로 읽은 값이라 측정이 아니다
+EAST_BAYS_W = A("EAST_BAYS_W", 4, "칸", "우측 채 정면 칸수", source=None)
+EAST_BAYS_D = A("EAST_BAYS_D", 2, "칸", "우측 채 측면 칸수", source=None)
+WEST_BAYS_W = A("WEST_BAYS_W", 3, "칸", "좌측 채 정면 칸수", source=None)
+WEST_BAYS_D = A("WEST_BAYS_D", 2, "칸", "좌측 채 측면 칸수", source=None)
+CHOGA_BAYS_W = A("CHOGA_BAYS_W", 3, "칸", "초가 정면 칸수(초가삼간)", source=None)
+CHOGA_BAYS_D = A("CHOGA_BAYS_D", 1.5, "칸", "초가 측면 칸수", source=None)
 
 # 마당 규모 — 좌우 채 정면 사이 거리(가정 11m). 민가 행랑마당은 대체로 이 정도.
 SENSOR_MM, FOCAL_MM = 36.0, 24.0
@@ -424,7 +433,18 @@ def main() -> int:
               f"패널 {len(a_props)}+{len(b_props)}개")
     print(f"[배치] ㄷ자 중정. 마당 폭 "
           f"{(8.0-EAST_BAYS_D*KAN/2)-(-8.5+WEST_BAYS_D*KAN/2):.1f}m")
-    print(f"[가정] 1칸={KAN}m, 기둥 h{COL_H}m, 기단 {STYLO_H}m, 처마 {EAVE}m")
+
+    # 가정값 출처 현황을 매 실행마다 드러낸다. 주석 뒤에 숨지 못하게.
+    side = write_sidecar(REPO / "storyboard_scene_market_assumptions.md",
+                         "한옥 마당 씬 가정값")
+    for line in report():
+        print(line)
+    print(f"[가정] 표 -> {side.name}")
+
+    if "--strict-assumptions" in sys.argv and unverified():
+        print(f"[error] 미확인 가정 {len(unverified())}개 — --strict-assumptions 위반",
+              file=sys.stderr)
+        return 1
     return 0
 
 
