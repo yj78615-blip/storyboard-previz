@@ -1,5 +1,6 @@
 # 산출물 (사용자별)
 out/
+out_*/
 runs/
 
 # 개인 스토리보드 인스턴스 (schema/example 만 트래킹)
