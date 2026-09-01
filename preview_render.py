@@ -35,6 +35,24 @@ sys.path.insert(0, str(_HERE / "blender_previz"))
 
 EMISSION_STRENGTH = 2.0
 
+# spec의 scale은 blender-previz 스킬 프리미티브 크기를 전제로 계산돼 있다.
+# 대체 렌더러는 proxy_library.create_prop의 프리미티브를 쓰는데 실제 크기가 달라서
+# 그 비율만큼 보정해야 한다. cube/sphere/cylinder는 양쪽 다 1유닛이라 보정 대상이 아니다.
+#
+# 근거 (preview_adapter.py):
+#   grid_plane : "스킬 prim_grid_plane 이 10x10 유닛" 주석 → (10, 10, -)
+#   l_shape z  : L_SHAPE_UNIT_Z = 3.0 상수      → z 3.0
+#   l_shape xy : HUMAN_XY_SCALE = 0.15 이 "30cm 폭 근사"라고 명시돼 있으므로
+#                스킬 l_shape의 XY는 2유닛이어야 앞뒤가 맞는다 (0.15 x 2 = 0.30m).
+#   그 외 소품  : preview_adapter가 scale_m(미터)를 그대로 싣는다 → 스킬 단위 1로 간주.
+#                 cube/sphere/cylinder는 실제도 1유닛이라 보정이 1.0이 되지만,
+#                 asymmetric_wedge는 실제 z가 0.8유닛이라 보정하지 않으면 20% 낮아진다.
+SKILL_PRIMITIVE_UNITS = {
+    "grid_plane":       (10.0, 10.0, 1.0),
+    "l_shape":          (2.0, 2.0, 3.0),
+    "asymmetric_wedge": (1.0, 1.0, 1.0),
+}
+
 
 def hex_to_rgba(hex_str: str) -> tuple[float, float, float, float]:
     h = hex_str.lstrip("#")
@@ -72,6 +90,41 @@ def _set_world_background(hex_color: str) -> None:
     bg = world.node_tree.nodes.get("Background")
     if bg:
         bg.inputs[0].default_value = hex_to_rgba(hex_color)
+    # Workbench는 world 대신 자체 배경 설정을 쓴다.
+    shading = scene.display.shading
+    shading.background_type = "VIEWPORT"
+    shading.background_color = hex_to_rgba(hex_color)[:3]
+
+
+# 조명 모드 트레이드오프 (Workbench):
+#   "FLAT"   — 오브젝트 색을 그대로 출력. 스킬 규칙 2(불가능한 네온 색)를 100% 보존하지만
+#              면별 음영이 없다. 깊이는 그림자·외곽선·캐비티가 담당한다. ← 기본값
+#   "STUDIO" — 면마다 방향 음영이 생겨 형태/방향이 더 잘 읽히는 대신,
+#              오브젝트 색에 조명이 곱해져 네온이 중간톤으로 가라앉는다.
+# 규칙 2는 저장소가 명시한 제약이므로 기본은 FLAT. 방향 판독이 더 급하면 STUDIO로 바꾼다.
+SHADING_LIGHT = "FLAT"
+
+
+def _setup_workbench_shading() -> None:
+    """Workbench + 오브젝트 색 + 그림자/외곽선/캐비티로 렌더한다.
+
+    Emission만 쓰면 모든 면이 각도와 무관하게 같은 색이라 음영이 0이고, 3D인데도
+    납작한 색면으로 보인다. Workbench의 color_type='OBJECT'는 오브젝트 색을 유지한 채
+    그림자와 외곽선을 얹으므로, 네온 식별성을 지키면서 공간감을 되살릴 수 있다.
+    (preview_composite.py가 같은 이유로 쓰는 조합.)
+    """
+    bpy = _lazy_bpy()
+    shading = bpy.context.scene.display.shading
+    shading.light = SHADING_LIGHT
+    shading.color_type = "OBJECT"
+    shading.show_shadows = True          # 접지·거리를 알려주는 가장 강한 단서
+    shading.shadow_intensity = 0.2       # 기본 0.5는 색을 과하게 눌러 네온이 죽는다
+    shading.show_specular_highlight = False  # 하이라이트가 네온 위에서 흰색으로 튄다
+    shading.show_cavity = True
+    shading.cavity_type = "WORLD"
+    shading.show_object_outline = True
+    shading.object_outline_color = (0.0, 0.0, 0.0)
+    bpy.context.scene.display.viewport_aa = "FXAA"
 
 
 def _make_emission_material(name: str, hex_color: str):
@@ -88,15 +141,44 @@ def _make_emission_material(name: str, hex_color: str):
     return mat
 
 
+def _local_size(obj) -> tuple[float, float, float]:
+    """스케일 적용 전 메시 자체의 bounding box 크기. depsgraph 갱신에 의존하지 않는다."""
+    verts = obj.data.vertices
+    if not verts:
+        return (0.0, 0.0, 0.0)
+    xs = [v.co.x for v in verts]
+    ys = [v.co.y for v in verts]
+    zs = [v.co.z for v in verts]
+    return (max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs))
+
+
+def unit_fixup(shape: str, actual_size: tuple[float, float, float]) -> tuple[float, float, float]:
+    """spec이 전제한 스킬 프리미티브 크기 ÷ 실제 프리미티브 크기. (순수 함수)
+
+    실제 크기를 런타임에 재서 넘기므로 proxy_library의 프리미티브가 바뀌어도 자동으로 따라간다.
+    두께가 0인 축(예: grid_plane의 z)은 보정하지 않는다.
+    """
+    assumed = SKILL_PRIMITIVE_UNITS.get(shape)
+    if assumed is None:
+        return (1.0, 1.0, 1.0)
+    return tuple(
+        (a / act) if act > 1e-9 else 1.0
+        for a, act in zip(assumed, actual_size)
+    )
+
+
 def _place_item(item: dict) -> None:
-    """create_prop()으로 도형 생성 후 spec의 pos/rot_deg/scale/color 그대로 적용."""
+    """create_prop()으로 도형 생성 후 spec의 pos/rot_deg/scale/color 적용."""
     from proxy_library import create_prop  # noqa: E402
 
     obj = create_prop(item["shape"], item["id"])
     obj.location = tuple(item["pos"])
     rot = item.get("rot_deg", [0.0, 0.0, 0.0])
     obj.rotation_euler = tuple(radians(float(d)) for d in rot)
-    obj.scale = tuple(item["scale"])
+    fixup = unit_fixup(item["shape"], _local_size(obj))
+    obj.scale = tuple(s * f for s, f in zip(item["scale"], fixup))
+    # Workbench는 obj.color를, EEVEE로 되돌릴 경우엔 머티리얼을 쓴다. 둘 다 채워둔다.
+    obj.color = hex_to_rgba(item["color"])
     mat = _make_emission_material(item["id"], item["color"])
     obj.data.materials.clear()
     obj.data.materials.append(mat)
@@ -192,7 +274,7 @@ def main() -> int:
     reset_scene()
 
     scene = bpy.context.scene
-    scene.render.engine = "BLENDER_EEVEE"
+    scene.render.engine = "BLENDER_WORKBENCH"
     res = scene_spec.get("resolution", [1280, 720])
     scene.render.resolution_x, scene.render.resolution_y = int(res[0]), int(res[1])
     scene.render.resolution_percentage = 100
@@ -200,7 +282,19 @@ def main() -> int:
     scene.render.film_transparent = False
     scene.render.image_settings.file_format = "PNG"
 
+    # 스킬 규칙 2: "불가능한 네온 색". Blender 기본 뷰 트랜스폼(AgX)은 채도가 높은 색을
+    # 필름처럼 눌러서 네온이 파스텔로 바랜다. 색 자체가 식별 수단인 프리뷰이므로 톤매핑을 끈다.
+    for candidate in ("Standard", "Raw"):
+        try:
+            scene.view_settings.view_transform = candidate
+            break
+        except TypeError:
+            continue
+    else:
+        print("[warn] Standard/Raw 뷰 트랜스폼 없음 — 네온 색이 바랠 수 있음", file=sys.stderr)
+
     _set_world_background(scene_spec.get("world_color", "#101010"))
+    _setup_workbench_shading()
 
     cam_obj, max_frame = _build_camera(spec, fps)
 
@@ -235,6 +329,40 @@ def _demo():
     assert abs(g - 0xFF / 255.0) < 1e-6
     assert abs(b - 0x14 / 255.0) < 1e-6
     assert a == 1.0
+
+    # 프리미티브 단위 보정: spec의 scale이 실제 미터로 환산되는지 검증.
+    # proxy_library의 실제 프리미티브 크기를 그대로 넣어 확인한다.
+    from proxy_library import l_shape_verts_faces  # noqa: E402
+
+    zs = [v[2] for v in l_shape_verts_faces()[0]]
+    l_h = max(zs) - min(zs)
+    assert abs(l_h - 1.8) < 1e-9, f"l_shape 실제 높이가 바뀜: {l_h}"
+
+    # 성인 1.75m: preview_adapter가 1.75/3.0=0.5833을 싣고, 보정 후 실제 1.75m가 되어야 함
+    fx = unit_fixup("l_shape", (1.0, 1.0, l_h))
+    assert abs((1.75 / 3.0) * fx[2] * l_h - 1.75) < 1e-9, (fx, "성인 키가 1.75m가 아님")
+    # HUMAN_XY_SCALE=0.15가 주석대로 "30cm 폭"이 되어야 함 (6cm 각목 방지)
+    assert abs(0.15 * fx[0] * 1.0 - 0.30) < 1e-9, (fx, "캐릭터 폭이 30cm가 아님")
+    assert abs(0.15 * fx[1] * 1.0 - 0.30) < 1e-9, (fx, "캐릭터 깊이가 30cm가 아님")
+
+    # 20m 바닥: adapter가 20/10=2.0을 싣고, 1x1 평면에 보정 후 20m가 되어야 함
+    fx = unit_fixup("grid_plane", (1.0, 1.0, 0.0))
+    assert abs(2.0 * fx[0] * 1.0 - 20.0) < 1e-9, (fx, "바닥이 20m가 아님")
+    assert fx[2] == 1.0, f"두께 0인 축은 보정하지 않아야 함: {fx}"
+
+    # 미터를 그대로 쓰는 도형은 보정 없음
+    for shape in ("cube", "sphere", "cylinder"):
+        assert unit_fixup(shape, (1.0, 1.0, 1.0)) == (1.0, 1.0, 1.0), shape
+
+    # asymmetric_wedge: 실제 z가 0.8유닛이라 scale_m을 미터로 쓰려면 1/0.8 보정 필요
+    from proxy_library import wedge_verts_faces  # noqa: E402
+
+    wz = [v[2] for v in wedge_verts_faces()[0]]
+    w_h = max(wz) - min(wz)
+    assert abs(w_h - 0.8) < 1e-9, f"wedge 실제 높이가 바뀜: {w_h}"
+    fx = unit_fixup("asymmetric_wedge", (1.0, 1.0, w_h))
+    assert abs(1.7 * fx[2] * w_h - 1.7) < 1e-9, (fx, "지붕 높이가 scale_m과 다름")
+
     print("preview_render.py: OK")
 
 
