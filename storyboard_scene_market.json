@@ -718,11 +718,11 @@
           "shape": "cylinder",
           "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.21893,
-            "y": 0.50724
+            "x": 0.23505,
+            "y": 0.50674
           },
           "estimated_transform": {
-            "depth_m": 8.8866,
+            "depth_m": 9.4558,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -732,33 +732,15 @@
           }
         },
         {
-          "name": "chayang_pole_b",
-          "shape": "cylinder",
-          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
-          "screen_position": {
-            "x": 0.26714,
-            "y": 0.5
-          },
-          "estimated_transform": {
-            "depth_m": 10.8931,
-            "yaw_deg": 0,
-            "scale_m": [
-              0.09,
-              0.09,
-              3.2
-            ]
-          }
-        },
-        {
           "name": "chayang_pole_c",
           "shape": "cylinder",
           "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.29903,
+            "x": 0.29108,
             "y": 0.5
           },
           "estimated_transform": {
-            "depth_m": 12.9294,
+            "depth_m": 12.3454,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -1503,11 +1485,11 @@
           "shape": "cylinder",
           "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.84112,
-            "y": 0.43491
+            "x": 0.78092,
+            "y": 0.38961
           },
           "estimated_transform": {
-            "depth_m": 2.6782,
+            "depth_m": 3.2268,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -1517,33 +1499,15 @@
           }
         },
         {
-          "name": "chayang_pole_b",
-          "shape": "cylinder",
-          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
-          "screen_position": {
-            "x": 0.70032,
-            "y": 0.31502
-          },
-          "estimated_transform": {
-            "depth_m": 4.6497,
-            "yaw_deg": 0,
-            "scale_m": [
-              0.09,
-              0.09,
-              3.2
-            ]
-          }
-        },
-        {
           "name": "chayang_pole_c",
           "shape": "cylinder",
           "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.64787,
-            "y": 0.27996
+            "x": 0.65914,
+            "y": 0.28749
           },
           "estimated_transform": {
-            "depth_m": 6.703,
+            "depth_m": 6.1131,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
