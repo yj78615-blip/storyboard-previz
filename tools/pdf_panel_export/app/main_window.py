@@ -1,9 +1,8 @@
 import os
-import re
 import sys
 
 import pymupdf as fitz
-from PySide6.QtCore import Qt, QRectF
+from PySide6.QtCore import Qt, QRectF, QTimer
 from PySide6.QtGui import QImage, QPixmap, QIcon
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QFileDialog, QHBoxLayout,
@@ -14,10 +13,9 @@ from PySide6.QtWidgets import (
 
 from .canvas import PdfCanvas
 from .constants import PREVIEW_DPI, ASPECT_W, ASPECT_H, TARGET_W, TARGET_H
-from .exporter import ExportWorker, MultiRegionExportWorker
+from .exporter import SequentialExportWorker
 from .presets import load_presets, save_presets
 from .region_sets import load_region_sets, save_region_sets
-from .util import sanitize_folder_name
 
 
 def render_page_to_pixmap(page: "fitz.Page", dpi: int) -> QPixmap:
@@ -42,8 +40,7 @@ class MainWindow(QMainWindow):
         self.page_index = 0
 
         self._updating_fields = False
-        self._worker: ExportWorker | None = None
-        self._multi_worker: MultiRegionExportWorker | None = None
+        self._worker: SequentialExportWorker | None = None
         self.presets: list[dict] = load_presets()
         self.regions: list[dict] = []
         self._active_region_tag: str | None = None
@@ -127,9 +124,11 @@ class MainWindow(QMainWindow):
         preset_layout.addLayout(preset_btn_row)
         preset_group.setLayout(preset_layout)
 
-        regions_group = QGroupBox("내보낼 영역 목록 (다중 선택)")
+        regions_group = QGroupBox("내보낼 영역 목록 (컷 순서)")
         regions_layout = QVBoxLayout()
         self.region_list = QListWidget()
+        self.region_list.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
+        self.region_list.model().rowsMoved.connect(self._on_region_reordered)
         self.region_list.itemDoubleClicked.connect(lambda _: self._load_selected_region())
         regions_layout.addWidget(self.region_list)
         region_btn_row1 = QHBoxLayout()
@@ -147,7 +146,8 @@ class MainWindow(QMainWindow):
         regions_layout.addLayout(region_btn_row2)
         regions_hint = QLabel(
             "목록이 비어 있으면 지금 그려둔 영역 하나만 내보냅니다.\n"
-            "여러 컷을 추가하면, 추가된 영역 전부를 모든 페이지에 각각 적용해 한 번에 내보냅니다."
+            "1페이지 영역1 → 1페이지 영역2 → 2페이지 영역1 ... 순서로 번호가 매겨집니다.\n"
+            "목록에서 항목을 드래그하면 컷 순서를 바꿀 수 있습니다."
         )
         regions_hint.setWordWrap(True)
         regions_hint.setStyleSheet("color: gray; font-size: 11px;")
@@ -180,14 +180,6 @@ class MainWindow(QMainWindow):
 
         out_group = QGroupBox("출력")
         out_form = QFormLayout()
-        self.tag_edit = QLineEdit()
-        self.tag_edit.setPlaceholderText("예: 인물컷1, 배경컷")
-        tag_hint = QLabel("같은 PDF에서 영역을 바꿔 여러 번 내보낼 때, 이름별로 하위 폴더에 나눠 저장됩니다.")
-        tag_hint.setWordWrap(True)
-        tag_hint.setStyleSheet("color: gray; font-size: 11px;")
-        out_form.addRow("영역 이름(태그)", self.tag_edit)
-        out_form.addRow("", tag_hint)
-
         self.out_dir_edit = QLineEdit()
         browse_btn = QPushButton("찾아보기...")
         browse_btn.clicked.connect(self._browse_output_dir)
@@ -196,7 +188,11 @@ class MainWindow(QMainWindow):
         out_dir_row.addWidget(browse_btn)
         out_dir_row_widget = QWidget()
         out_dir_row_widget.setLayout(out_dir_row)
-        out_form.addRow("저장 폴더(기본)", out_dir_row_widget)
+        out_form.addRow("저장 폴더", out_dir_row_widget)
+        out_hint = QLabel("잘라낸 이미지는 이 폴더에 001, 002, 003... 순서대로 저장됩니다.")
+        out_hint.setWordWrap(True)
+        out_hint.setStyleSheet("color: gray; font-size: 11px;")
+        out_form.addRow("", out_hint)
         out_group.setLayout(out_form)
 
         self.export_btn = QPushButton(f"내보내기 ({TARGET_W}x{TARGET_H} PNG)")
@@ -263,7 +259,6 @@ class MainWindow(QMainWindow):
 
         default_dir = os.path.join(os.path.dirname(path), f"{os.path.splitext(os.path.basename(path))[0]}_export")
         self.out_dir_edit.setText(default_dir)
-        self.tag_edit.setText("crop1")
 
         self.regions = []
         self._active_region_tag = None
@@ -394,18 +389,34 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------ regions
     def _refresh_region_list(self):
         self.region_list.clear()
-        for region in self.regions:
+        for order, region in enumerate(self.regions, start=1):
             rect = region["rect"]
             item = QListWidgetItem(
-                f"{region['tag']} ({round(rect.width())}x{round(rect.height())} @ {round(rect.x())},{round(rect.y())})"
+                f"{order}. {region['tag']} "
+                f"({round(rect.width())}x{round(rect.height())} @ {round(rect.x())},{round(rect.y())})"
             )
             item.setData(Qt.ItemDataRole.UserRole, region)
             self.region_list.addItem(item)
         self.canvas.set_reference_regions([(r["tag"], r["rect"]) for r in self.regions])
-        self.export_btn.setText(
-            f"내보내기 ({TARGET_W}x{TARGET_H} PNG)" if not self.regions
-            else f"내보내기 ({len(self.regions)}개 영역 x {TARGET_W}x{TARGET_H} PNG)"
-        )
+        self._update_export_button_text()
+
+    def _update_export_button_text(self):
+        region_count = max(len(self.regions), 1)
+        page_count = self.doc.page_count if self.doc is not None else 0
+        if page_count:
+            total = page_count * region_count
+            self.export_btn.setText(f"내보내기 ({total}장, {TARGET_W}x{TARGET_H} PNG)")
+        else:
+            self.export_btn.setText(f"내보내기 ({TARGET_W}x{TARGET_H} PNG)")
+
+    def _on_region_reordered(self, *_args):
+        self.regions = [
+            self.region_list.item(row).data(Qt.ItemDataRole.UserRole)
+            for row in range(self.region_list.count())
+        ]
+        # Rebuilding the list re-numbers the rows, but it must not happen
+        # while the view is still finishing the drop that triggered this.
+        QTimer.singleShot(0, self._refresh_region_list)
 
     def _suggest_region_tag(self) -> str:
         return self._active_region_tag or f"cut{len(self.regions) + 1}"
@@ -547,6 +558,18 @@ class MainWindow(QMainWindow):
         if path:
             self.out_dir_edit.setText(path)
 
+    def _collect_export_regions(self) -> list[QRectF] | None:
+        """The region list defines the cut order; with an empty list the
+        currently drawn selection is exported on its own."""
+        if self.regions:
+            return [region["rect"] for region in self.regions]
+
+        rect = self.canvas.selection_rect()
+        if rect.width() <= 0 or rect.height() <= 0:
+            QMessageBox.warning(self, "영역 없음", "먼저 잘라낼 영역을 지정해주세요.")
+            return None
+        return [rect]
+
     def _start_export(self):
         if self.doc is None or self.pdf_path is None:
             return
@@ -555,77 +578,14 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "저장 폴더 없음", "저장 폴더를 지정해주세요.")
             return
 
-        if self.regions:
-            self._start_multi_export(output_dir)
-        else:
-            self._start_single_export(output_dir)
+        regions = self._collect_export_regions()
+        if regions is None:
+            return
 
-    def _start_multi_export(self, output_dir: str):
-        base_name = os.path.splitext(os.path.basename(self.pdf_path))[0]
-
-        conflicts = []
-        for region in self.regions:
-            region_dir = os.path.join(output_dir, sanitize_folder_name(region["tag"]))
-            if os.path.isdir(region_dir) and os.listdir(region_dir):
-                conflicts.append(region["tag"])
-        if conflicts:
+        if os.path.isdir(output_dir) and os.listdir(output_dir):
             reply = QMessageBox.question(
                 self, "덮어쓰기 확인",
-                "다음 영역 폴더에 이미 파일이 있습니다. 모두 덮어쓸까요?\n" + ", ".join(conflicts),
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            )
-            if reply != QMessageBox.StandardButton.Yes:
-                return
-
-        self.export_btn.setEnabled(False)
-        self.progress_bar.setValue(0)
-        self.progress_bar.setMaximum(self.doc.page_count * len(self.regions))
-        self.status_label.setText("내보내는 중...")
-
-        regions_arg = [(r["tag"], r["rect"]) for r in self.regions]
-        self._multi_worker = MultiRegionExportWorker(self.pdf_path, regions_arg, output_dir, base_name)
-        self._multi_worker.progress.connect(self._on_multi_export_progress)
-        self._multi_worker.finished_ok.connect(self._on_multi_export_finished)
-        self._multi_worker.failed.connect(self._on_export_failed)
-        self._multi_worker.start()
-
-    def _on_multi_export_progress(self, done: int, total: int, tag: str):
-        self.progress_bar.setMaximum(total)
-        self.progress_bar.setValue(done)
-        self.status_label.setText(f"[{tag}] 내보내는 중 ({done}/{total})")
-
-    def _on_multi_export_finished(self, output_dir: str, region_count: int, total_files: int):
-        self.status_label.setText(f"완료: {region_count}개 영역, 총 {total_files}개 PNG 저장됨")
-        self.export_btn.setEnabled(True)
-        QMessageBox.information(
-            self, "내보내기 완료",
-            f"{region_count}개 영역에서 총 {total_files}개의 PNG 파일을 저장했습니다:\n{output_dir}",
-        )
-
-    def _start_single_export(self, output_dir: str):
-        rect = self.canvas.selection_rect()
-        if rect.width() <= 0 or rect.height() <= 0:
-            QMessageBox.warning(self, "영역 없음", "먼저 잘라낼 영역을 지정해주세요.")
-            return
-
-        tag = self.tag_edit.text().strip()
-        if not tag:
-            QMessageBox.warning(
-                self, "영역 이름 필요",
-                "같은 PDF에서 다른 영역을 내보낼 때 기존 결과를 덮어쓰지 않도록,\n"
-                "이번 영역을 구분할 이름(태그)을 입력해주세요. 예: 인물컷1",
-            )
-            return
-        safe_tag = sanitize_folder_name(tag)
-        if not safe_tag:
-            QMessageBox.warning(self, "영역 이름 오류", "영역 이름에 사용할 수 있는 문자가 없습니다. 다른 이름을 입력해주세요.")
-            return
-
-        final_output_dir = os.path.join(output_dir, safe_tag)
-        if os.path.isdir(final_output_dir) and os.listdir(final_output_dir):
-            reply = QMessageBox.question(
-                self, "덮어쓰기 확인",
-                f'"{safe_tag}" 폴더에 이미 파일이 있습니다. 덮어쓸까요?\n{final_output_dir}',
+                f"저장 폴더에 이미 파일이 있습니다. 덮어쓸까요?\n{output_dir}",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             )
             if reply != QMessageBox.StandardButton.Yes:
@@ -635,30 +595,27 @@ class MainWindow(QMainWindow):
 
         self.export_btn.setEnabled(False)
         self.progress_bar.setValue(0)
-        self.progress_bar.setMaximum(self.doc.page_count)
+        self.progress_bar.setMaximum(self.doc.page_count * len(regions))
         self.status_label.setText("내보내는 중...")
 
-        self._worker = ExportWorker(self.pdf_path, rect, final_output_dir, base_name)
+        self._worker = SequentialExportWorker(self.pdf_path, regions, output_dir, base_name)
         self._worker.progress.connect(self._on_export_progress)
         self._worker.finished_ok.connect(self._on_export_finished)
         self._worker.failed.connect(self._on_export_failed)
         self._worker.start()
 
-    def _on_export_progress(self, current: int, total: int):
+    def _on_export_progress(self, done: int, total: int):
         self.progress_bar.setMaximum(total)
-        self.progress_bar.setValue(current)
-        self.status_label.setText(f"{current}/{total} 페이지 처리 중")
+        self.progress_bar.setValue(done)
+        self.status_label.setText(f"{done}/{total} 장 저장 중")
 
     def _on_export_finished(self, output_dir: str, count: int):
-        self.status_label.setText(f"완료: {count}개 PNG 저장됨")
+        self.status_label.setText(f"완료: {count}장 저장됨 (001 ~ {str(count).zfill(3)})")
         self.export_btn.setEnabled(True)
-        QMessageBox.information(self, "내보내기 완료", f"{count}개의 PNG 파일을 저장했습니다:\n{output_dir}")
-        self._suggest_next_tag()
-
-    def _suggest_next_tag(self):
-        match = re.fullmatch(r"crop(\d+)", self.tag_edit.text().strip())
-        if match:
-            self.tag_edit.setText(f"crop{int(match.group(1)) + 1}")
+        QMessageBox.information(
+            self, "내보내기 완료",
+            f"{count}장의 PNG를 순서대로 저장했습니다:\n{output_dir}",
+        )
 
     def _on_export_failed(self, message: str):
         self.status_label.setText("실패")

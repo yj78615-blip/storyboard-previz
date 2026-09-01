@@ -32,6 +32,9 @@ Thumbs.db
 .idea/
 *.swp
 
+# OMC 운영 아티팩트
+.omc/
+
 # PyInstaller build artifacts (tools/pdf_panel_export)
 tools/pdf_panel_export/build/
 tools/pdf_panel_export/dist/
