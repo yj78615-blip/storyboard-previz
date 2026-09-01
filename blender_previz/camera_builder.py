@@ -34,7 +34,7 @@ blender-previz 스킬 규약 반영:
 """
 
 from __future__ import annotations
-from math import atan, degrees, radians, tan, sqrt
+from math import atan, atan2, degrees, radians, tan, sqrt
 from typing import Any, Sequence
 
 ALLOWED_EASING = {"LINEAR", "EASE_IN", "EASE_OUT", "EASE_IN_OUT"}
@@ -107,21 +107,25 @@ def euler_from_look_at(
     """블렌더 카메라는 로컬 -Z 방향을 바라봄. 월드 방향 벡터로부터 XYZ Euler 계산.
 
     roll은 카메라 로컬 Z(=바라보는 축의 반대)에 대한 회전, 즉 Dutch tilt.
-    간단한 유도로 충분한 정확도 — 짐벌락 회피는 룩업이 정수직인 극단 케이스만 문제라 상관없음.
+
+    유도: Blender XYZ Euler는 R = Rz(yaw) @ Ry(roll) @ Rx(rot_x).
+    카메라 forward = R @ (0,0,-1) 이므로, roll=0일 때
+      Rx(rot_x) @ (0,0,-1) = (0, sin(rot_x), -cos(rot_x))
+      Rz(yaw) 적용 후    = (-sin(yaw)·sin(rot_x), cos(yaw)·sin(rot_x), -cos(rot_x))
+    이를 (dx, dy, dz) 방향에 맞추면:
+      sin(rot_x) ∝ dist_xy, -cos(rot_x) ∝ dz  →  rot_x = atan2(dist_xy, -dz)
+      -sin(yaw)  ∝ dx,       cos(yaw)  ∝ dy   →  yaw   = atan2(-dx, dy)
+    atan2를 쓰므로 사분면 보정이 불필요하고, dist_xy=0(수직 룩업)도 자연히 처리된다.
     """
     dx = target[0] - cam_pos[0]
     dy = target[1] - cam_pos[1]
     dz = target[2] - cam_pos[2]
     dist_xy = sqrt(dx * dx + dy * dy)
 
-    # 카메라 기본이 -Z. 타겟 방향 벡터를 이 축에 정렬.
-    # rot_x: 피치, rot_z: 요, rot_y: 롤(Dutch)
-    yaw = atan(dx / dy) if dy != 0 else (radians(90) if dx > 0 else radians(-90))
-    if dy > 0:  # 카메라 뒤쪽 방향을 보는 경우 보정
-        yaw += radians(180)
-    pitch = -atan(dz / dist_xy) if dist_xy > 1e-6 else (radians(-90) if dz > 0 else radians(90))
+    rot_x = atan2(dist_xy, -dz)   # 피치 (수평이면 90°)
+    yaw = atan2(-dx, dy)          # 요
     # 블렌더 XYZ Euler: rot_x(pitch about X), rot_y(roll), rot_z(yaw about Z)
-    return (radians(90) + pitch, radians(roll_deg), yaw)
+    return (rot_x, radians(roll_deg), yaw)
 
 
 def point_to_segment_min_distance(
@@ -320,11 +324,40 @@ def _demo():
     r, s = resolve_focal_mm({})
     assert s.startswith("default") and r == 50.0
 
-    # look_at: 원점→(-Y) 바라봄 = 회전 없어야 함(pitch=90도, yaw=0, roll=0 in blender convention)
-    eul = euler_from_look_at((0, 5, 0), (0, 0, 0))
-    # pitch = 90도 근처(radians(90) + 0)
-    assert abs(eul[0] - radians(90)) < 1e-6, eul
-    assert abs(eul[1]) < 1e-6
+    # look_at: 반환된 Euler로부터 실제 forward 벡터를 복원해 타겟 방향과 일치하는지 검증.
+    # (과거 yaw를 검사하지 않아 180° 반전 버그가 통과한 적 있음 — 방향 자체를 확인할 것)
+    from math import cos, sin
+
+    def _forward(eul):
+        rot_x, _roll, yaw = eul
+        return (-sin(yaw) * sin(rot_x), cos(yaw) * sin(rot_x), -cos(rot_x))
+
+    def _assert_looks_at(cam, tgt):
+        eul = euler_from_look_at(cam, tgt)
+        fx, fy, fz = _forward(eul)
+        dx, dy, dz = (tgt[0] - cam[0], tgt[1] - cam[1], tgt[2] - cam[2])
+        d = sqrt(dx * dx + dy * dy + dz * dz)
+        exp = (dx / d, dy / d, dz / d)
+        for got, want, axis in zip((fx, fy, fz), exp, "xyz"):
+            assert abs(got - want) < 1e-9, f"cam{cam}->tgt{tgt} {axis}: got {got}, want {want}"
+        return eul
+
+    # 수평 4방향: 카메라가 원점을 향해야 함
+    eul = _assert_looks_at((0, -12, 1.6), (0, 0, 1.6))   # +Y를 봄 → yaw 0
+    assert abs(eul[0] - radians(90)) < 1e-9, eul
+    assert abs(eul[2]) < 1e-9, f"+Y를 볼 때 yaw는 0이어야 함: {eul}"
+    eul = _assert_looks_at((0, 5, 0), (0, 0, 0))         # -Y를 봄 → yaw 180
+    assert abs(eul[0] - radians(90)) < 1e-9, eul
+    assert abs(abs(eul[2]) - radians(180)) < 1e-9, f"-Y를 볼 때 yaw는 ±180이어야 함: {eul}"
+    _assert_looks_at((-5, 0, 0), (0, 0, 0))              # +X를 봄
+    _assert_looks_at((5, 0, 0), (0, 0, 0))               # -X를 봄
+    # 위/아래 내려다보기, 대각선, 수직 룩업(dist_xy=0) 경계
+    _assert_looks_at((0, -12, 10), (0, 0, 0))
+    _assert_looks_at((3, -4, -2), (0, 0, 0))
+    _assert_looks_at((0, 0, 5), (0, 0, 0))               # 바로 아래를 봄
+    _assert_looks_at((0, 0, -5), (0, 0, 0))              # 바로 위를 봄
+    # roll(Dutch)은 y 성분에만 실림
+    assert abs(euler_from_look_at((0, -5, 0), (0, 0, 0), 15.0)[1] - radians(15)) < 1e-9
 
     # min_distance: 정면 가까이 지나가면 abort
     keys = [
