@@ -124,6 +124,22 @@ def _resolve_world_pos_from_panel(
     )
 
 
+def ground_character_pos(
+    pos: tuple[float, float, float],
+) -> tuple[float, float, float]:
+    """캐릭터를 지면(z=0)에 세운다. x·y는 화면 투영 결과를 유지.
+
+    screen_to_world_at_depth()가 돌려주는 점은 "화면의 그 위치가 3D 어디인가"이므로,
+    화면 세로 중앙(y=0.5)이면 카메라 높이(예: 1.6m)가 나온다. 그런데 매니큰 프록시는
+    원점이 발밑이라, 그 점을 그대로 쓰면 캐릭터가 공중에 뜬다.
+
+    스키마의 pose_category는 standing/sitting/walking/running/lying/kneeling/other로
+    전부 지면 접촉 포즈이므로 z를 지면으로 내리는 것이 안전하다.
+    (실린더 같은 소품은 원점이 중심이라 이 보정이 필요 없어 캐릭터에만 적용한다.)
+    """
+    return (pos[0], pos[1], 0.0)
+
+
 def build_shot(
     scene: dict,
     shot_id: str,
@@ -152,7 +168,9 @@ def build_shot(
     # 캐릭터: 마지막 등장 패널 기준
     for cid, (pi, item) in _last_appearance_index(panels, "characters_in_frame", "character_id").items():
         panel = panels[pi]
-        pos = _resolve_world_pos_from_panel(panel, item, keys, pi, len(panels), scene_meta, aspect)
+        pos = ground_character_pos(
+            _resolve_world_pos_from_panel(panel, item, keys, pi, len(panels), scene_meta, aspect)
+        )
         kind = char_reg[cid]["kind"]
         yaw = (item.get("estimated_transform") or {}).get("yaw_deg", 0.0)
         char_payload = {

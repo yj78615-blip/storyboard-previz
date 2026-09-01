@@ -29,6 +29,7 @@ from assembly import (  # noqa: E402
     _last_appearance_index,
     _last_prop_appearances,
     _resolve_world_pos_from_panel,
+    ground_character_pos,
 )
 from camera_builder import DEFAULT_SENSOR_WIDTH_MM, resolve_focal_mm  # noqa: E402
 from placement import parse_aspect  # noqa: E402
@@ -127,7 +128,9 @@ def build_spec(scene: dict, shot_id: str) -> dict:
     for ci, cid in enumerate(sorted(char_last.keys())):
         pi, item = char_last[cid]
         panel = panels[pi]
-        pos = _resolve_world_pos_from_panel(panel, item, keys, pi, len(panels), scene_meta, aspect)
+        pos = ground_character_pos(
+            _resolve_world_pos_from_panel(panel, item, keys, pi, len(panels), scene_meta, aspect)
+        )
         kind = char_reg[cid]["kind"]
         yaw = (item.get("estimated_transform") or {}).get("yaw_deg", 0.0)
         subjects.append({
@@ -276,6 +279,11 @@ def _demo():
     yuna = next(s for s in spec["subjects"] if s["id"] == "char_yuna")
     minsu = next(s for s in spec["subjects"] if s["id"] == "char_minsu")
     assert yuna["pos"][0] < minsu["pos"][0], (yuna["pos"], minsu["pos"])
+
+    # 캐릭터는 지면에 서 있어야 함 (매니큰 원점이 발밑이라 z!=0이면 공중에 뜬다)
+    for s in spec["subjects"]:
+        if s["id"].startswith("char_"):
+            assert abs(s["pos"][2]) < 1e-9, f"{s['id']} 이 공중에 떠 있음: {s['pos']}"
 
     # 앵커 색 침범 금지 (팔레트 순환에서 형광그린 배제 확인)
     for s in spec["subjects"]:
