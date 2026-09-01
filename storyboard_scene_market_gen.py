@@ -249,24 +249,28 @@ PROPS += [
     ("stone_wall", "cube", (0.0, 13.0, WALL_H / 2), (17.0, WALL_T, WALL_H), 0,
      "기와를 얹은 낮은 돌담"),
 
-    # 좌측 채에 매인 장터 차양 — 마당 안쪽으로 뻗는다
-    ("chayang_pole_a", "cylinder", (-4.9, -0.3, 1.55), (0.09, 0.09, 3.1), 0,
-     "차양을 받친 대나무 장대"),
-    ("chayang_pole_b", "cylinder", (-4.3, 1.6, 1.6), (0.09, 0.09, 3.2), 0,
-     "차양을 받친 대나무 장대"),
-    ("chayang_pole_c", "cylinder", (-3.7, 3.5, 1.6), (0.09, 0.09, 3.2), 0,
-     "차양을 받친 대나무 장대"),
-    ("chayang_canopy", "cube", (-4.6, 1.6, 3.05), (2.6, 5.4, 0.06), 0,
-     "장터 차양, 빛바랜 삼베 천막이 마당 쪽으로 늘어짐"),
-    ("dansang_platform", "cube", (-4.0, 1.5, 0.35), (2.4, 4.0, 0.7), 0,
+    # 좌측 채에 매인 장터 차양.
+    # 차양은 건물 처마에서 마당 쪽으로 뻗고, 장대는 그 '바깥 모서리'를 받친다.
+    # 장대를 단상 위에 세우면 무대 한복판에 기둥이 박혀 사람이 설 자리가 없어진다.
+    # x 를 하나로 통일해 일직선으로 세운다(제각각 두면 사선으로 박힌다).
+    ("chayang_pole_a", "cylinder", (-2.9, -0.6, 1.55), (0.09, 0.09, 3.1), 0,
+     "차양 바깥 모서리를 받친 대나무 장대"),
+    ("chayang_pole_b", "cylinder", (-2.9, 1.5, 1.6), (0.09, 0.09, 3.2), 0,
+     "차양 바깥 모서리를 받친 대나무 장대"),
+    ("chayang_pole_c", "cylinder", (-2.9, 3.6, 1.6), (0.09, 0.09, 3.2), 0,
+     "차양 바깥 모서리를 받친 대나무 장대"),
+    ("chayang_canopy", "cube", (-4.2, 1.5, 3.05), (2.8, 5.0, 0.06), 0,
+     "장터 차양, 건물 처마에서 마당 쪽으로 늘어진 삼베 천막"),
+    # 단상: 건물과 장대 사이. 가운데는 사람이 올라설 수 있게 비워둔다.
+    ("dansang_platform", "cube", (-4.4, 1.5, 0.35), (2.0, 3.6, 0.7), 0,
      "낮은 나무 단상, 널빤지가 드러난 마루"),
-    ("buk_drum", "cylinder", (-4.4, 0.2, 1.0), (0.6, 0.6, 0.6), 0,
-     "단상 위에 놓인 전통 북, 나무통에 가죽을 메운 북"),
-    ("janggu_drum", "cylinder", (-3.9, 2.0, 0.95), (0.3, 0.3, 0.5), 0,
+    ("buk_drum", "cylinder", (-4.7, 0.5, 1.0), (0.6, 0.6, 0.6), 0,
+     "단상 한쪽에 놓인 전통 북, 나무통에 가죽을 메운 북"),
+    ("janggu_drum", "cylinder", (-4.1, 2.4, 0.95), (0.3, 0.3, 0.5), 0,
      "장구, 잘록한 허리의 장구통"),
-    ("jwapan_stall", "cube", (-3.4, 4.6, 0.4), (1.1, 2.0, 0.8), 0,
+    ("jwapan_stall", "cube", (-3.6, 5.4, 0.4), (1.1, 2.0, 0.8), 0,
      "좌판 매대, 천을 덮은 나무 판매대"),
-    ("basket_goods", "cylinder", (-3.2, 3.9, 0.95), (0.5, 0.5, 0.35), 0,
+    ("basket_goods", "cylinder", (-3.3, 4.7, 0.95), (0.5, 0.5, 0.35), 0,
      "곡식이 담긴 싸리 광주리"),
 
     # 안쪽 담 앞 장독대
@@ -344,6 +348,29 @@ def _prop_entry(name, shape, role, sx, sy, depth, yaw, scale):
                                     "scale_m": list(scale)}}
 
 
+def check_clear_surfaces(problems):
+    """사람이 올라서는 면(단상·마루) 한복판에 수직 부재가 박혔는지 검사.
+
+    차양 장대를 단상 위에 세워 무대 가운데를 막아버린 적이 있다. 눈으로는
+    프리뷰를 한참 봐야 보이지만 좌표로는 즉시 잡힌다.
+
+    회전한 건물의 마루는 yaw!=0 이라 축정렬 사각형으로 볼 수 없어 건너뛴다.
+    건물 기둥은 설계상 마루의 '가장자리'에 서므로 안쪽 판정에서 걸리지 않는다.
+    """
+    boxes = {n: (p, s) for n, sh, p, s, y, r in PROPS if y == 0}
+    surfaces = [n for n in boxes if "platform" in n or n.endswith("_maru")]
+    verticals = [n for n in boxes if "pole" in n or "column" in n]
+    for sn in surfaces:
+        (sx, sy, _), (sw, sd, _) = boxes[sn]
+        x0, x1, y0, y1 = sx - sw / 2, sx + sw / 2, sy - sd / 2, sy + sd / 2
+        for vn in verticals:
+            (vx, vy, _), _ = boxes[vn]
+            if x0 < vx < x1 and y0 < vy < y1:
+                problems.append(
+                    f"  {vn} ({vx:+.2f},{vy:+.2f}) 가 {sn} "
+                    f"(x {x0:+.2f}~{x1:+.2f}, y {y0:+.2f}~{y1:+.2f}) 한복판에 박혔다")
+
+
 def split_props_for_shot(shot, problems):
     """이 샷의 시작/끝 키프레임 중 먼저 화면에 들어오는 쪽으로 소품을 배정."""
     (cam_a, look_a), (cam_b, look_b) = shot["start"], shot["end"]
@@ -372,6 +399,7 @@ def split_props_for_shot(shot, problems):
 
 def main() -> int:
     problems = []
+    check_clear_surfaces(problems)
     per_shot = [(s, *split_props_for_shot(s, problems)) for s in SHOTS]
 
     if problems:

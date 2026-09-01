@@ -716,13 +716,13 @@
         {
           "name": "chayang_pole_a",
           "shape": "cylinder",
-          "final_role": "차양을 받친 대나무 장대",
+          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.06369,
-            "y": 0.50709
+            "x": 0.21893,
+            "y": 0.50724
           },
           "estimated_transform": {
-            "depth_m": 9.9851,
+            "depth_m": 8.8866,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -734,13 +734,13 @@
         {
           "name": "chayang_pole_b",
           "shape": "cylinder",
-          "final_role": "차양을 받친 대나무 장대",
+          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.17636,
+            "x": 0.26714,
             "y": 0.5
           },
           "estimated_transform": {
-            "depth_m": 11.439,
+            "depth_m": 10.8931,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -752,13 +752,13 @@
         {
           "name": "chayang_pole_c",
           "shape": "cylinder",
-          "final_role": "차양을 받친 대나무 장대",
+          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.25336,
+            "x": 0.29903,
             "y": 0.5
           },
           "estimated_transform": {
-            "depth_m": 13.0361,
+            "depth_m": 12.9294,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -770,17 +770,17 @@
         {
           "name": "chayang_canopy",
           "shape": "cube",
-          "final_role": "장터 차양, 빛바랜 삼베 천막이 마당 쪽으로 늘어짐",
+          "final_role": "장터 차양, 건물 처마에서 마당 쪽으로 늘어진 삼베 천막",
           "screen_position": {
-            "x": 0.1563,
-            "y": 0.33267
+            "x": 0.18037,
+            "y": 0.33147
           },
           "estimated_transform": {
-            "depth_m": 11.6457,
+            "depth_m": 11.4014,
             "yaw_deg": 0,
             "scale_m": [
-              2.6,
-              5.4,
+              2.8,
+              5.0,
               0.06
             ]
           }
@@ -790,15 +790,15 @@
           "shape": "cube",
           "final_role": "낮은 나무 단상, 널빤지가 드러난 마루",
           "screen_position": {
-            "x": 0.19381,
-            "y": 0.64509
+            "x": 0.16688,
+            "y": 0.64547
           },
           "estimated_transform": {
-            "depth_m": 11.3054,
+            "depth_m": 11.4531,
             "yaw_deg": 0,
             "scale_m": [
-              2.4,
-              4.0,
+              2.0,
+              3.6,
               0.7
             ]
           }
@@ -806,13 +806,13 @@
         {
           "name": "buk_drum",
           "shape": "cylinder",
-          "final_role": "단상 위에 놓인 전통 북, 나무통에 가죽을 메운 북",
+          "final_role": "단상 한쪽에 놓인 전통 북, 나무통에 가죽을 메운 북",
           "screen_position": {
-            "x": 0.12475,
-            "y": 0.58002
+            "x": 0.11297,
+            "y": 0.57758
           },
           "estimated_transform": {
-            "depth_m": 10.2157,
+            "depth_m": 10.616,
             "yaw_deg": 0,
             "scale_m": [
               0.6,
@@ -826,11 +826,11 @@
           "shape": "cylinder",
           "final_role": "장구, 잘록한 허리의 장구통",
           "screen_position": {
-            "x": 0.21239,
-            "y": 0.57189
+            "x": 0.20881,
+            "y": 0.56939
           },
           "estimated_transform": {
-            "depth_m": 11.689,
+            "depth_m": 12.1323,
             "yaw_deg": 0,
             "scale_m": [
               0.3,
@@ -845,10 +845,10 @@
           "final_role": "좌판 매대, 천을 덮은 나무 판매대",
           "screen_position": {
             "x": 0.28531,
-            "y": 0.60658
+            "y": 0.60066
           },
           "estimated_transform": {
-            "depth_m": 14.0698,
+            "depth_m": 14.8916,
             "yaw_deg": 0,
             "scale_m": [
               1.1,
@@ -862,11 +862,11 @@
           "shape": "cylinder",
           "final_role": "곡식이 담긴 싸리 광주리",
           "screen_position": {
-            "x": 0.28665,
-            "y": 0.56086
+            "x": 0.29163,
+            "y": 0.55728
           },
           "estimated_transform": {
-            "depth_m": 13.3069,
+            "depth_m": 14.1068,
             "yaw_deg": 0,
             "scale_m": [
               0.5,
@@ -1501,13 +1501,13 @@
         {
           "name": "chayang_pole_a",
           "shape": "cylinder",
-          "final_role": "차양을 받친 대나무 장대",
+          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.31604,
-            "y": 0.4026
+            "x": 0.84112,
+            "y": 0.43491
           },
           "estimated_transform": {
-            "depth_m": 2.8814,
+            "depth_m": 2.6782,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -1519,13 +1519,13 @@
         {
           "name": "chayang_pole_b",
           "shape": "cylinder",
-          "final_role": "차양을 받친 대나무 장대",
+          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.4898,
-            "y": 0.31102
+            "x": 0.70032,
+            "y": 0.31502
           },
           "estimated_transform": {
-            "depth_m": 4.6271,
+            "depth_m": 4.6497,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -1537,13 +1537,13 @@
         {
           "name": "chayang_pole_c",
           "shape": "cylinder",
-          "final_role": "차양을 받친 대나무 장대",
+          "final_role": "차양 바깥 모서리를 받친 대나무 장대",
           "screen_position": {
-            "x": 0.56522,
-            "y": 0.28065
+            "x": 0.64787,
+            "y": 0.27996
           },
           "estimated_transform": {
-            "depth_m": 6.5192,
+            "depth_m": 6.703,
             "yaw_deg": 0,
             "scale_m": [
               0.09,
@@ -1557,15 +1557,15 @@
           "shape": "cube",
           "final_role": "낮은 나무 단상, 널빤지가 드러난 마루",
           "screen_position": {
-            "x": 0.53147,
-            "y": 0.6275
+            "x": 0.47562,
+            "y": 0.62578
           },
           "estimated_transform": {
-            "depth_m": 4.793,
+            "depth_m": 4.8096,
             "yaw_deg": 0,
             "scale_m": [
-              2.4,
-              4.0,
+              2.0,
+              3.6,
               0.7
             ]
           }
@@ -1573,13 +1573,13 @@
         {
           "name": "buk_drum",
           "shape": "cylinder",
-          "final_role": "단상 위에 놓인 전통 북, 나무통에 가죽을 메운 북",
+          "final_role": "단상 한쪽에 놓인 전통 북, 나무통에 가죽을 메운 북",
           "screen_position": {
-            "x": 0.45247,
-            "y": 0.56737
+            "x": 0.40469,
+            "y": 0.53714
           },
           "estimated_transform": {
-            "depth_m": 3.3764,
+            "depth_m": 3.7068,
             "yaw_deg": 0,
             "scale_m": [
               0.6,
@@ -1593,11 +1593,11 @@
           "shape": "cylinder",
           "final_role": "장구, 잘록한 허리의 장구통",
           "screen_position": {
-            "x": 0.54574,
-            "y": 0.45584
+            "x": 0.52061,
+            "y": 0.43763
           },
           "estimated_transform": {
-            "depth_m": 5.11,
+            "depth_m": 5.502,
             "yaw_deg": 0,
             "scale_m": [
               0.3,
@@ -1611,11 +1611,11 @@
           "shape": "cube",
           "final_role": "좌판 매대, 천을 덮은 나무 판매대",
           "screen_position": {
-            "x": 0.58449,
-            "y": 0.45715
+            "x": 0.56417,
+            "y": 0.4338
           },
           "estimated_transform": {
-            "depth_m": 7.7897,
+            "depth_m": 8.5604,
             "yaw_deg": 0,
             "scale_m": [
               1.1,
@@ -1629,11 +1629,11 @@
           "shape": "cylinder",
           "final_role": "곡식이 담긴 싸리 광주리",
           "screen_position": {
-            "x": 0.61046,
-            "y": 0.38992
+            "x": 0.59404,
+            "y": 0.37105
           },
           "estimated_transform": {
-            "depth_m": 7.0251,
+            "depth_m": 7.8027,
             "yaw_deg": 0,
             "scale_m": [
               0.5,
@@ -2101,17 +2101,17 @@
         {
           "name": "chayang_canopy",
           "shape": "cube",
-          "final_role": "장터 차양, 빛바랜 삼베 천막이 마당 쪽으로 늘어짐",
+          "final_role": "장터 차양, 건물 처마에서 마당 쪽으로 늘어진 삼베 천막",
           "screen_position": {
-            "x": 0.38782,
-            "y": 0.55127
+            "x": 0.39732,
+            "y": 0.5546
           },
           "estimated_transform": {
-            "depth_m": 27.7457,
+            "depth_m": 27.6187,
             "yaw_deg": 0,
             "scale_m": [
-              2.6,
-              5.4,
+              2.8,
+              5.0,
               0.06
             ]
           }
