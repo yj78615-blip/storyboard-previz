@@ -99,6 +99,28 @@ python seedance_builder.py --scene storyboard_scene_example.json --shot s001 \
 
 산출: `out/s001_payload.json` (prompt + Seedance API 페이로드)
 
+#### 블록아웃 전달 형태 (`--blockout-mode`)
+
+블록아웃을 **어떤 형태로 모델에 넘기느냐**에 따라 프롬프트의 지시 방식이 달라진다.
+
+| 모드 | 쓸 때 | 화이트모델 지시 방식 |
+|---|---|---|
+| `fbx` (기본) | 이름 붙은 오브젝트가 그대로 전달될 때 | ``cube `east_column0` -> …`` 오브젝트별 한 줄 |
+| `video` | **프리뷰 MP4를 레퍼런스로 올릴 때** | `cube x5 (right of frame) -> …` 보이는 덩어리로 묶음 |
+
+렌더된 영상에는 오브젝트 이름이 존재하지 않으므로, 영상 레퍼런스를 받는 API
+(예: Higgsfield 의 Seedance `omni_reference`)에는 반드시 `--blockout-mode video`
+를 써야 한다. 같은 `shape` + 같은 `final_role` 을 한 줄로 묶고 개수와 화면 위치를
+붙여, 모델이 화면에서 실제로 집어낼 수 있는 형태로 만든다.
+
+```bash
+python seedance_builder.py --scene storyboard_scene_example.json --shot s001 \
+    --blockout-dir out --out out/s001_payload.json --blockout-mode video
+```
+
+이때 `payload.blockout` 은 `preview_video` + `camera_track` 을 가리킨다
+(FBX 대신 경로 B 가 만든 `{shot_id}_preview.mp4`).
+
 **경로 B** (카메라 확인용 네온 프리뷰 MP4):
 
 ```bash
