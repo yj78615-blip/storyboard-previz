@@ -50,7 +50,7 @@
         {
           "name": "east_stylobate",
           "shape": "cube",
-          "final_role": "우측 기와 채 기단, 다듬은 돌을 낮게 쌓은 단",
+          "final_role": "우측 기와 채 기단, 다듬지 않은 자연석을 낮게 쌓은 단",
           "screen_position": {
             "x": 0.83729,
             "y": 0.61638
@@ -89,15 +89,15 @@
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.65637,
-            "y": 0.48092
+            "y": 0.48569
           },
           "estimated_transform": {
-            "depth_m": 19.14,
+            "depth_m": 19.139,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -125,15 +125,15 @@
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.68599,
-            "y": 0.4781
+            "y": 0.48358
           },
           "estimated_transform": {
-            "depth_m": 16.86,
+            "depth_m": 16.8588,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -161,15 +161,15 @@
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.72585,
-            "y": 0.47431
+            "y": 0.48074
           },
           "estimated_transform": {
-            "depth_m": 14.6185,
+            "depth_m": 14.6171,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -197,15 +197,15 @@
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.78239,
-            "y": 0.46894
+            "y": 0.47671
           },
           "estimated_transform": {
-            "depth_m": 12.4362,
+            "depth_m": 12.4347,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -233,15 +233,15 @@
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.86885,
-            "y": 0.46073
+            "y": 0.47054
           },
           "estimated_transform": {
-            "depth_m": 10.3508,
+            "depth_m": 10.3489,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -251,15 +251,15 @@
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
             "x": 0.7038,
-            "y": 0.47968
+            "y": 0.48476
           },
           "estimated_transform": {
-            "depth_m": 18.2962,
+            "depth_m": 18.2951,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -269,15 +269,15 @@
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
             "x": 0.74317,
-            "y": 0.47645
+            "y": 0.48234
           },
           "estimated_transform": {
-            "depth_m": 16.0758,
+            "depth_m": 16.0745,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -287,15 +287,15 @@
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
             "x": 0.79738,
-            "y": 0.47201
+            "y": 0.47901
           },
           "estimated_transform": {
-            "depth_m": 13.9151,
+            "depth_m": 13.9137,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -305,15 +305,15 @@
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
             "x": 0.87677,
-            "y": 0.46552
+            "y": 0.47414
           },
           "estimated_transform": {
-            "depth_m": 11.8469,
+            "depth_m": 11.8453,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -341,15 +341,15 @@
           "final_role": "우측 기와 채 몸채 흙벽, 안쪽 방들",
           "screen_position": {
             "x": 0.8579,
-            "y": 0.47466
+            "y": 0.481
           },
           "estimated_transform": {
-            "depth_m": 15.9293,
+            "depth_m": 15.9281,
             "yaw_deg": -90,
             "scale_m": [
               9.408,
               3.9,
-              2.4
+              2.25
             ]
           }
         },
@@ -359,22 +359,22 @@
           "final_role": "우측 기와 채 기와지붕, 처마가 깊게 내밀고 끝에 단청이 보임",
           "screen_position": {
             "x": 0.83729,
-            "y": 0.37304
+            "y": 0.38573
           },
           "estimated_transform": {
-            "depth_m": 15.7639,
+            "depth_m": 15.7503,
             "yaw_deg": -90,
             "scale_m": [
               11.7,
               6.9,
-              1.5
+              1.3800000000000001
             ]
           }
         },
         {
           "name": "west_stylobate",
           "shape": "cube",
-          "final_role": "좌측 기와 채 기단, 다듬은 돌을 낮게 쌓은 단",
+          "final_role": "좌측 기와 채 기단, 다듬지 않은 자연석을 낮게 쌓은 단",
           "screen_position": {
             "x": 0.03184,
             "y": 0.62158
@@ -413,15 +413,15 @@
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.04681,
-            "y": 0.46434
+            "y": 0.47326
           },
           "estimated_transform": {
-            "depth_m": 12.0607,
+            "depth_m": 12.059,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -449,15 +449,15 @@
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.12596,
-            "y": 0.47125
+            "y": 0.47844
           },
           "estimated_transform": {
-            "depth_m": 14.1824,
+            "depth_m": 14.181,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -485,15 +485,15 @@
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.17944,
-            "y": 0.47591
+            "y": 0.48193
           },
           "estimated_transform": {
-            "depth_m": 16.3811,
+            "depth_m": 16.3799,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -521,15 +521,15 @@
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
             "x": 0.21798,
-            "y": 0.47927
+            "y": 0.48446
           },
           "estimated_transform": {
-            "depth_m": 18.6295,
+            "depth_m": 18.6285,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -539,15 +539,15 @@
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
             "x": 0.03453,
-            "y": 0.46799
+            "y": 0.47599
           },
           "estimated_transform": {
-            "depth_m": 13.5518,
+            "depth_m": 13.5503,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -557,15 +557,15 @@
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
             "x": 0.1092,
-            "y": 0.47367
+            "y": 0.48025
           },
           "estimated_transform": {
-            "depth_m": 15.6554,
+            "depth_m": 15.6541,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -575,15 +575,15 @@
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
             "x": 0.16137,
-            "y": 0.47764
+            "y": 0.48323
           },
           "estimated_transform": {
-            "depth_m": 17.834,
+            "depth_m": 17.8329,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -611,15 +611,15 @@
           "final_role": "좌측 기와 채 몸채 흙벽, 안쪽 방들",
           "screen_position": {
             "x": 0.00841,
-            "y": 0.47341
+            "y": 0.48006
           },
           "estimated_transform": {
-            "depth_m": 16.619,
+            "depth_m": 16.6179,
             "yaw_deg": 90,
             "scale_m": [
               7.055999999999999,
               3.9,
-              2.4
+              2.25
             ]
           }
         },
@@ -629,15 +629,15 @@
           "final_role": "좌측 기와 채 기와지붕, 처마가 깊게 내밀고 끝에 단청이 보임",
           "screen_position": {
             "x": 0.03184,
-            "y": 0.36737
+            "y": 0.38063
           },
           "estimated_transform": {
-            "depth_m": 16.4469,
+            "depth_m": 16.4339,
             "yaw_deg": 90,
             "scale_m": [
               9.299999999999999,
               6.9,
-              1.5
+              1.3800000000000001
             ]
           }
         },
@@ -680,7 +680,7 @@
         {
           "name": "choga_roof",
           "shape": "asymmetric_wedge",
-          "final_role": "초가집 볏짚 지붕, 두껍게 이어 얹어 모서리가 둥글다",
+          "final_role": "초가집 볏짚 지붕, 두껍게 이어 얹었으나 물매는 기와보다 뜨다",
           "screen_position": {
             "x": 0.42923,
             "y": 0.46264
@@ -691,7 +691,7 @@
             "scale_m": [
               8.6,
               5.0,
-              1.8
+              0.75
             ]
           }
         },
@@ -1159,7 +1159,7 @@
         {
           "name": "west_stylobate",
           "shape": "cube",
-          "final_role": "좌측 기와 채 기단, 다듬은 돌을 낮게 쌓은 단",
+          "final_role": "좌측 기와 채 기단, 다듬지 않은 자연석을 낮게 쌓은 단",
           "screen_position": {
             "x": 0.17501,
             "y": 0.4622
@@ -1197,16 +1197,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.21483,
-            "y": 0.2319
+            "x": 0.21601,
+            "y": 0.25257
           },
           "estimated_transform": {
-            "depth_m": 4.8765,
+            "depth_m": 4.8786,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1233,16 +1233,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.32549,
-            "y": 0.22226
+            "x": 0.32596,
+            "y": 0.23582
           },
           "estimated_transform": {
-            "depth_m": 7.1176,
+            "depth_m": 7.119,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1269,16 +1269,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.37922,
-            "y": 0.21759
+            "x": 0.37946,
+            "y": 0.22767
           },
           "estimated_transform": {
-            "depth_m": 9.4372,
+            "depth_m": 9.4383,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1305,16 +1305,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.41096,
-            "y": 0.21482
+            "x": 0.4111,
+            "y": 0.22285
           },
           "estimated_transform": {
-            "depth_m": 11.789,
+            "depth_m": 11.7899,
             "yaw_deg": 90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1323,16 +1323,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.17636,
-            "y": 0.2259
+            "x": 0.17741,
+            "y": 0.24215
           },
           "estimated_transform": {
-            "depth_m": 6.3537,
+            "depth_m": 6.3554,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -1341,16 +1341,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.28146,
-            "y": 0.21949
+            "x": 0.28196,
+            "y": 0.231
           },
           "estimated_transform": {
-            "depth_m": 8.5446,
+            "depth_m": 8.5458,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -1359,16 +1359,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.33886,
-            "y": 0.21599
+            "x": 0.33914,
+            "y": 0.2249
           },
           "estimated_transform": {
-            "depth_m": 10.8245,
+            "depth_m": 10.8255,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -1395,16 +1395,16 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 몸채 흙벽, 안쪽 방들",
           "screen_position": {
-            "x": 0.12207,
-            "y": 0.21931
+            "x": 0.12292,
+            "y": 0.23068
           },
           "estimated_transform": {
-            "depth_m": 9.4081,
+            "depth_m": 9.4092,
             "yaw_deg": 90,
             "scale_m": [
               7.055999999999999,
               3.9,
-              2.4
+              2.25
             ]
           }
         },
@@ -1413,16 +1413,16 @@
           "shape": "asymmetric_wedge",
           "final_role": "좌측 기와 채 기와지붕, 처마가 깊게 내밀고 끝에 단청이 보임",
           "screen_position": {
-            "x": 0.14563,
-            "y": 0.02964
+            "x": 0.14729,
+            "y": 0.05414
           },
           "estimated_transform": {
-            "depth_m": 9.2445,
+            "depth_m": 9.2278,
             "yaw_deg": 90,
             "scale_m": [
               9.299999999999999,
               6.9,
-              1.5
+              1.3800000000000001
             ]
           }
         },
@@ -1465,7 +1465,7 @@
         {
           "name": "choga_roof",
           "shape": "asymmetric_wedge",
-          "final_role": "초가집 볏짚 지붕, 두껍게 이어 얹어 모서리가 둥글다",
+          "final_role": "초가집 볏짚 지붕, 두껍게 이어 얹었으나 물매는 기와보다 뜨다",
           "screen_position": {
             "x": 0.64189,
             "y": 0.17788
@@ -1476,7 +1476,7 @@
             "scale_m": [
               8.6,
               5.0,
-              1.8
+              0.75
             ]
           }
         },
@@ -1777,7 +1777,7 @@
         {
           "name": "east_stylobate",
           "shape": "cube",
-          "final_role": "우측 기와 채 기단, 다듬은 돌을 낮게 쌓은 단",
+          "final_role": "우측 기와 채 기단, 다듬지 않은 자연석을 낮게 쌓은 단",
           "screen_position": {
             "x": 0.66997,
             "y": 0.53602
@@ -1815,16 +1815,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.61182,
-            "y": 0.36807
+            "x": 0.61164,
+            "y": 0.37008
           },
           "estimated_transform": {
-            "depth_m": 34.0567,
+            "depth_m": 34.1054,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1851,16 +1851,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.61753,
-            "y": 0.42734
+            "x": 0.61732,
+            "y": 0.42936
           },
           "estimated_transform": {
-            "depth_m": 32.3138,
+            "depth_m": 32.3651,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1887,16 +1887,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.62385,
-            "y": 0.493
+            "x": 0.62363,
+            "y": 0.495
           },
           "estimated_transform": {
-            "depth_m": 30.6597,
+            "depth_m": 30.7139,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1923,16 +1923,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.63089,
-            "y": 0.56611
+            "x": 0.63064,
+            "y": 0.56809
           },
           "estimated_transform": {
-            "depth_m": 29.1098,
+            "depth_m": 29.1668,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1959,16 +1959,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 네모진 나무 기둥(방주)",
           "screen_position": {
-            "x": 0.63879,
-            "y": 0.64805
+            "x": 0.6385,
+            "y": 0.64997
           },
           "estimated_transform": {
-            "depth_m": 27.6814,
+            "depth_m": 27.7413,
             "yaw_deg": -90,
             "scale_m": [
               0.21,
               0.21,
-              2.4
+              2.25
             ]
           }
         },
@@ -1977,16 +1977,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.63302,
-            "y": 0.39697
+            "x": 0.6328,
+            "y": 0.39898
           },
           "estimated_transform": {
-            "depth_m": 33.3387,
+            "depth_m": 33.3885,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -1995,16 +1995,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.63999,
-            "y": 0.45931
+            "x": 0.63974,
+            "y": 0.46132
           },
           "estimated_transform": {
-            "depth_m": 31.6473,
+            "depth_m": 31.6997,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -2013,16 +2013,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.64773,
-            "y": 0.52854
+            "x": 0.64745,
+            "y": 0.53053
           },
           "estimated_transform": {
-            "depth_m": 30.0525,
+            "depth_m": 30.1077,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -2031,16 +2031,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.65638,
-            "y": 0.60588
+            "x": 0.65607,
+            "y": 0.60783
           },
           "estimated_transform": {
-            "depth_m": 28.5704,
+            "depth_m": 28.6285,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
               0.08,
-              2.4
+              2.25
             ]
           }
         },
@@ -2067,16 +2067,16 @@
           "shape": "cube",
           "final_role": "우측 기와 채 몸채 흙벽, 안쪽 방들",
           "screen_position": {
-            "x": 0.68688,
-            "y": 0.493
+            "x": 0.68654,
+            "y": 0.495
           },
           "estimated_transform": {
-            "depth_m": 31.3059,
+            "depth_m": 31.3589,
             "yaw_deg": -90,
             "scale_m": [
               9.408,
               3.9,
-              2.4
+              2.25
             ]
           }
         },
@@ -2085,16 +2085,16 @@
           "shape": "asymmetric_wedge",
           "final_role": "우측 기와 채 기와지붕, 처마가 깊게 내밀고 끝에 단청이 보임",
           "screen_position": {
-            "x": 0.68228,
-            "y": 0.45994
+            "x": 0.68159,
+            "y": 0.46418
           },
           "estimated_transform": {
-            "depth_m": 30.349,
+            "depth_m": 30.4525,
             "yaw_deg": -90,
             "scale_m": [
               11.7,
               6.9,
-              1.5
+              1.3800000000000001
             ]
           }
         },

@@ -51,26 +51,37 @@ from placement import screen_to_world_at_depth  # noqa: E402
 #  실측 도면이 생기면 미확인 항목부터 교체한다. (motorhome 씬처럼 도면이 있으면
 #  그 값이 사실이고, 이 블록은 도면이 없을 때의 대체물일 뿐이다.)
 # ═══════════════════════════════════════════════════════════════════════════
+KAN = A("KAN", 2.4, "m", "1칸(주간거리)",
+        source="조선 민가 영조법식 기준 8자. 영조척 1자=30.8~31cm → 8자≈2.46m, "
+               "통상 2.4m 로 쓴다")
 COL_D = A("COL_D", 0.21, "m", "기둥 한 변(방주)",
-          source="민가는 방주(사각기둥)만 허용 — 원주는 격이 높아 정전·큰 건물용이고 "
-                 "조선시대 민가엔 법으로 금지. 단면은 6~8치의 중간값")
+          source="주간 8자일 때 기둥은 7~8치 각이 적정하고 살림집은 7치가 적당. "
+                 "7치=21.2cm. 민가는 방주만 허용(조선시대 원기둥 금지)")
 TOEN_D = A("TOEN_D", 0.9, "m", "툇간 깊이(툇기둥~분합문)",
            source="전면 평주와 안쪽 고주 사이 '반칸 정도(3~4자)'=0.91~1.21m 중 "
                   "하한인 3자(0.909m). 툇마루는 남부지방 一자형 민가의 보편 요소")
+COL_H = A("COL_H", 2.25, "m", "기둥 높이(초석 상단~처마도리)",
+          source="한옥 방의 천장 높이 약 7.5자(225cm) 기준. 다만 천장고와 기둥고는 "
+                 "정확히 같지 않아 근사값이다")
 
-KAN          = A("KAN", 2.4, "m", "1칸(주간거리)", source=None)
-COL_H        = A("COL_H", 2.4, "m", "기둥 높이(초석 상단~처마도리)", source=None)
+# 지붕은 높이가 아니라 물매(수평 10 에 대한 수직 비)로 잡는다. 그래야 문헌의
+# '초가가 기와보다 물매가 뜨다'는 관계가 건물 크기와 무관하게 유지된다.
+TILE_PITCH = A("TILE_PITCH", 0.4, "비", "기와지붕 물매(4치)",
+               source="기와는 물매를 세치(0.3) 이하로 하면 물이 역류해 누수가 생기므로 "
+                      "그보다 세운 4치를 택했다")
+THATCH_PITCH = A("THATCH_PITCH", 0.3, "비", "초가지붕 물매(3치)",
+                 source="초가는 기와집보다 물매가 뜨다(작다)는 것이 가장 큰 차이. "
+                        "방향만 문헌 근거이고 3치라는 값 자체는 미확인")
+
 FOOT_D       = A("FOOT_D", 0.45, "m", "초석(덤벙주초) 직경", source=None)
 FOOT_H       = A("FOOT_H", 0.25, "m", "초석 노출 높이", source=None)
 STYLO_H      = A("STYLO_H", 0.45, "m", "기단 높이", source=None)
 STYLO_MARGIN = A("STYLO_MARGIN", 0.6, "m", "기단이 기둥열 밖으로 나온 폭", source=None)
 EAVE         = A("EAVE", 1.05, "m", "처마 내밀기", source=None)
-TILE_ROOF_H  = A("TILE_ROOF_H", 1.5, "m", "기와지붕 처마~용마루", source=None)
 DOOR_T       = A("DOOR_T", 0.08, "m", "분합문 두께", source=None)
 MARU_T       = A("MARU_T", 0.12, "m", "마루 널 두께", source=None)
 
-THATCH_EAVE    = A("THATCH_EAVE", 0.7, "m", "초가 처마 내밀기(기와보다 짧다)", source=None)
-THATCH_ROOF_H  = A("THATCH_ROOF_H", 1.8, "m", "초가 지붕 두께(볏짚이라 두껍다)", source=None)
+THATCH_EAVE    = A("THATCH_EAVE", 0.7, "m", "초가 처마 내밀기", source=None)
 THATCH_WALL_H  = A("THATCH_WALL_H", 2.1, "m", "초가 흙벽 높이", source=None)
 THATCH_STYLO_H = A("THATCH_STYLO_H", 0.3, "m", "초가 기단 높이", source=None)
 
@@ -159,7 +170,7 @@ def tile_house(prefix, cx, cy, bays_w, bays_d, yaw, kor, bay_filter=None):
     px, py = _place(cx, cy, 0, 0, yaw)
     out.append((f"{prefix}_stylobate", "cube", (px, py, STYLO_H / 2),
                 (w + 2 * STYLO_MARGIN, d + 2 * STYLO_MARGIN, STYLO_H), yaw,
-                f"{kor} 기단, 다듬은 돌을 낮게 쌓은 단"))
+                f"{kor} 기단, 다듬지 않은 자연석을 낮게 쌓은 단"))
 
     cols = [-w / 2.0 + i * KAN for i in range(bays_w + 1)]
     idxs = list(range(len(cols))) if bay_filter is None else sorted(bay_filter)
@@ -193,8 +204,9 @@ def tile_house(prefix, cx, cy, bays_w, bays_d, yaw, kor, bay_filter=None):
     out.append((f"{prefix}_body", "cube", (px, py, col_base + COL_H / 2),
                 (w * 0.98, body_d, COL_H), yaw, f"{kor} 몸채 흙벽, 안쪽 방들"))
     px, py = _place(cx, cy, 0, 0, yaw)
+    roof_d = d + 2 * EAVE
     out.append((f"{prefix}_roof", "asymmetric_wedge", (px, py, col_top),
-                (w + 2 * EAVE, d + 2 * EAVE, TILE_ROOF_H), yaw,
+                (w + 2 * EAVE, roof_d, roof_d / 2 * TILE_PITCH), yaw,
                 f"{kor} 기와지붕, 처마가 깊게 내밀고 끝에 단청이 보임"))
     return out
 
@@ -209,8 +221,9 @@ def thatch_house(prefix, cx, cy, bays_w, bays_d, yaw, kor="초가집"):
         (f"{prefix}_wall", "cube", (cx, cy, THATCH_STYLO_H + THATCH_WALL_H / 2),
          (w, d, THATCH_WALL_H), yaw, f"{kor} 흙벽, 낮고 두툼한 벽면"),
         (f"{prefix}_roof", "asymmetric_wedge", (cx, cy, wall_top),
-         (w + 2 * THATCH_EAVE, d + 2 * THATCH_EAVE, THATCH_ROOF_H), yaw,
-         f"{kor} 볏짚 지붕, 두껍게 이어 얹어 모서리가 둥글다"),
+         (w + 2 * THATCH_EAVE, d + 2 * THATCH_EAVE,
+          (d + 2 * THATCH_EAVE) / 2 * THATCH_PITCH), yaw,
+         f"{kor} 볏짚 지붕, 두껍게 이어 얹었으나 물매는 기와보다 뜨다"),
     ]
 
 
