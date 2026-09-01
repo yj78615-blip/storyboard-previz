@@ -59,6 +59,8 @@ EAVE         = 1.05   # 처마 내밀기. 민가 0.9~1.2m
 TILE_ROOF_H  = 1.5    # 기와지붕 처마~용마루
 DOOR_T       = 0.08   # 분합문 두께
 MARU_T       = 0.12   # 대청마루 널 두께
+TOEN_D       = 0.9    # 툇간 깊이. 앞 기둥열(툇기둥)과 분합문 사이 툇마루 폭.
+                      # 민가는 반 칸 안팎.
 
 THATCH_EAVE    = 0.7   # 초가 처마는 짧다
 THATCH_ROOF_H  = 1.8   # 볏짚이 두꺼워 지붕 덩어리가 크다
@@ -117,7 +119,17 @@ def _place(cx, cy, lx, ly, yaw_deg):
 
 
 def tile_house(prefix, cx, cy, bays_w, bays_d, yaw, kor, bay_filter=None):
-    """기와집 한 채. 층위: 기단→초석→기둥→분합문→마루→몸채→지붕.
+    """기와집 한 채. 한옥 단면을 앞에서 뒤로 그대로 쌓는다.
+
+        툇기둥열 ─ 툇마루 ─ 분합문 ─ 몸채(방) ─ 뒷기둥열
+        지붕은 양쪽 기둥열 밖으로 EAVE 만큼 처마를 내민다.
+
+    분합문은 '몸채의 앞면'이다. 앞 기둥열에 붙이면 문 뒤에 또 벽이 서서 그 사이가
+    빈 이중 껍질이 되므로 그러지 않는다. 앞 기둥열은 툇마루 위에 열린 채로 선다.
+
+    기둥은 툇기둥 한 줄만 세운다. 실제 한옥엔 뒷기둥도 있지만 몸채 벽면에 묻혀
+    보이지 않고, 몸채가 배면까지 차서 지붕을 이미 받친다. 블록아웃은 화면에
+    드러나는 것만 만든다.
 
     로컬 기준 정면은 -Y 쪽. yaw 로 통째 회전시켜 마당을 향하게 한다.
     yaw=0 정면이 -Y(카메라쪽) / yaw=-90 정면이 -X(서) / yaw=+90 정면이 +X(동).
@@ -125,7 +137,9 @@ def tile_house(prefix, cx, cy, bays_w, bays_d, yaw, kor, bay_filter=None):
     scale_m 은 로컬 축 기준이고 회전은 prop 의 yaw_deg 가 담당한다.
     """
     w, d = bays_w * KAN, bays_d * KAN
-    fy = -d / 2.0                      # 로컬 정면 y
+    fy, by = -d / 2.0, d / 2.0         # 로컬 정면 / 배면 y
+    door_y = fy + TOEN_D               # 분합문 = 몸채 앞면
+    body_c, body_d = (door_y + by) / 2.0, by - door_y
     stylo_top = STYLO_H
     col_base = stylo_top + FOOT_H
     col_top = col_base + COL_H
@@ -137,32 +151,36 @@ def tile_house(prefix, cx, cy, bays_w, bays_d, yaw, kor, bay_filter=None):
                 f"{kor} 기단, 다듬은 돌을 낮게 쌓은 단"))
 
     cols = [-w / 2.0 + i * KAN for i in range(bays_w + 1)]
-    idxs = range(len(cols)) if bay_filter is None else bay_filter
+    idxs = list(range(len(cols))) if bay_filter is None else sorted(bay_filter)
+    # 툇기둥열. 덤벙주초는 다듬지 않은 자연석이라 둥그스름 → cylinder 로 근사.
+    # 기둥은 방주(사각기둥) — 민가에 원기둥은 쓸 수 없다.
     for i in idxs:
         px, py = _place(cx, cy, cols[i], fy, yaw)
-        # 덤벙주초는 다듬지 않은 자연석이라 둥그스름 → cylinder 로 근사
-        out.append((f"{prefix}_footing{i}", "cylinder", (px, py, stylo_top + FOOT_H / 2),
-                    (FOOT_D, FOOT_D, FOOT_H), yaw, f"{kor} 덤벙주초, 다듬지 않은 자연석 주춧돌"))
-        # 기둥은 방주(사각기둥). 민가에 원기둥은 쓸 수 없다.
-        out.append((f"{prefix}_column{i}", "cube", (px, py, col_base + COL_H / 2),
-                    (COL_D, COL_D, COL_H), yaw, f"{kor} 네모진 나무 기둥(방주)"))
+        out.append((f"{prefix}_footing{i}", "cylinder",
+                    (px, py, stylo_top + FOOT_H / 2), (FOOT_D, FOOT_D, FOOT_H), yaw,
+                    f"{kor} 덤벙주초, 다듬지 않은 자연석 주춧돌"))
+        out.append((f"{prefix}_column{i}", "cube",
+                    (px, py, col_base + COL_H / 2), (COL_D, COL_D, COL_H), yaw,
+                    f"{kor} 네모진 나무 기둥(방주)"))
 
     for i in range(len(cols) - 1):
         if bay_filter is not None and not (i in bay_filter and i + 1 in bay_filter):
             continue
-        px, py = _place(cx, cy, (cols[i] + cols[i + 1]) / 2.0, fy + 0.12, yaw)
-        # 높이를 기둥과 같게 잡아 아래위로 뜨지 않게 한다 (이전엔 0.88배라 0.14m씩 떠 있었음)
+        px, py = _place(cx, cy, (cols[i] + cols[i + 1]) / 2.0, door_y, yaw)
+        # 높이를 기둥과 같게 잡아 아래위로 뜨지 않게 한다
         out.append((f"{prefix}_door{i}", "cube", (px, py, col_base + COL_H / 2),
                     (KAN - COL_D, DOOR_T, COL_H), yaw,
                     f"{kor} 창호지 분합문 한 칸, 격자살이 비침"))
 
-    px, py = _place(cx, cy, 0, fy + d * 0.22, yaw)
+    # 툇마루: 앞 기둥열과 분합문 사이
+    px, py = _place(cx, cy, 0, (fy + door_y) / 2.0, yaw)
     out.append((f"{prefix}_maru", "cube", (px, py, stylo_top + MARU_T / 2),
-                (w * 0.96, d * 0.4, MARU_T), yaw,
-                f"{kor} 대청마루, 처마 밑으로 물러앉은 나무 바닥"))
-    px, py = _place(cx, cy, 0, d * 0.22, yaw)
+                (w * 0.96, TOEN_D, MARU_T), yaw,
+                f"{kor} 툇마루, 처마 밑 기둥열 사이로 난 나무 바닥"))
+    # 몸채: 분합문 뒤부터 배면까지
+    px, py = _place(cx, cy, 0, body_c, yaw)
     out.append((f"{prefix}_body", "cube", (px, py, col_base + COL_H / 2),
-                (w * 0.98, d * 0.5, COL_H), yaw, f"{kor} 몸채 흙벽, 안쪽 방들"))
+                (w * 0.98, body_d, COL_H), yaw, f"{kor} 몸채 흙벽, 안쪽 방들"))
     px, py = _place(cx, cy, 0, 0, yaw)
     out.append((f"{prefix}_roof", "asymmetric_wedge", (px, py, col_top),
                 (w + 2 * EAVE, d + 2 * EAVE, TILE_ROOF_H), yaw,

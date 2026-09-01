@@ -250,11 +250,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.67466,
-            "y": 0.47962
+            "x": 0.7038,
+            "y": 0.47968
           },
           "estimated_transform": {
-            "depth_m": 18.0338,
+            "depth_m": 18.2962,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -268,11 +268,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.70953,
-            "y": 0.47637
+            "x": 0.74317,
+            "y": 0.47645
           },
           "estimated_transform": {
-            "depth_m": 15.7765,
+            "depth_m": 16.0758,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -286,11 +286,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.7576,
-            "y": 0.4719
+            "x": 0.79738,
+            "y": 0.47201
           },
           "estimated_transform": {
-            "depth_m": 13.5683,
+            "depth_m": 13.9151,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -304,11 +304,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.8281,
-            "y": 0.46534
+            "x": 0.87677,
+            "y": 0.46552
           },
           "estimated_transform": {
-            "depth_m": 11.4376,
+            "depth_m": 11.8469,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -320,17 +320,17 @@
         {
           "name": "east_maru",
           "shape": "cube",
-          "final_role": "우측 기와 채 대청마루, 처마 밑으로 물러앉은 나무 바닥",
+          "final_role": "우측 기와 채 툇마루, 처마 밑 기둥열 사이로 난 나무 바닥",
           "screen_position": {
-            "x": 0.7752,
-            "y": 0.59285
+            "x": 0.74694,
+            "y": 0.59312
           },
           "estimated_transform": {
-            "depth_m": 15.0911,
+            "depth_m": 14.8338,
             "yaw_deg": -90,
             "scale_m": [
               9.216,
-              1.92,
+              0.9,
               0.12
             ]
           }
@@ -340,15 +340,15 @@
           "shape": "cube",
           "final_role": "우측 기와 채 몸채 흙벽, 안쪽 방들",
           "screen_position": {
-            "x": 0.88552,
-            "y": 0.47473
+            "x": 0.8579,
+            "y": 0.47466
           },
           "estimated_transform": {
-            "depth_m": 16.2589,
+            "depth_m": 15.9293,
             "yaw_deg": -90,
             "scale_m": [
               9.408,
-              2.4,
+              3.9,
               2.4
             ]
           }
@@ -538,11 +538,11 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.08318,
-            "y": 0.46814
+            "x": 0.03453,
+            "y": 0.46799
           },
           "estimated_transform": {
-            "depth_m": 13.1658,
+            "depth_m": 13.5518,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
@@ -556,11 +556,11 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.14897,
-            "y": 0.47377
+            "x": 0.1092,
+            "y": 0.47367
           },
           "estimated_transform": {
-            "depth_m": 15.3225,
+            "depth_m": 15.6554,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
@@ -574,11 +574,11 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.195,
-            "y": 0.47771
+            "x": 0.16137,
+            "y": 0.47764
           },
           "estimated_transform": {
-            "depth_m": 17.5425,
+            "depth_m": 17.834,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
@@ -590,18 +590,36 @@
         {
           "name": "west_maru",
           "shape": "cube",
-          "final_role": "좌측 기와 채 대청마루, 처마 밑으로 물러앉은 나무 바닥",
+          "final_role": "좌측 기와 채 툇마루, 처마 밑 기둥열 사이로 난 나무 바닥",
           "screen_position": {
-            "x": 0.1012,
-            "y": 0.59574
+            "x": 0.13218,
+            "y": 0.59546
           },
           "estimated_transform": {
-            "depth_m": 15.7606,
+            "depth_m": 15.4949,
             "yaw_deg": 90,
             "scale_m": [
               6.911999999999999,
-              1.92,
+              0.9,
               0.12
+            ]
+          }
+        },
+        {
+          "name": "west_body",
+          "shape": "cube",
+          "final_role": "좌측 기와 채 몸채 흙벽, 안쪽 방들",
+          "screen_position": {
+            "x": 0.00841,
+            "y": 0.47341
+          },
+          "estimated_transform": {
+            "depth_m": 16.619,
+            "yaw_deg": 90,
+            "scale_m": [
+              7.055999999999999,
+              3.9,
+              2.4
             ]
           }
         },
@@ -1096,26 +1114,7 @@
         }
       },
       "characters_in_frame": [],
-      "props_in_frame": [
-        {
-          "name": "west_body",
-          "shape": "cube",
-          "final_role": "좌측 기와 채 몸채 흙벽, 안쪽 방들",
-          "screen_position": {
-            "x": 0.43556,
-            "y": 0.43943
-          },
-          "estimated_transform": {
-            "depth_m": 20.1982,
-            "yaw_deg": 90,
-            "scale_m": [
-              7.055999999999999,
-              2.4,
-              2.4
-            ]
-          }
-        }
-      ],
+      "props_in_frame": [],
       "lighting": {
         "time_of_day": "morning",
         "notes": "엷은 구름을 통과한 부드러운 확산광, 그림자가 옅음"
@@ -1324,11 +1323,11 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.2676,
-            "y": 0.22605
+            "x": 0.17636,
+            "y": 0.2259
           },
           "estimated_transform": {
-            "depth_m": 6.0248,
+            "depth_m": 6.3537,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
@@ -1342,11 +1341,11 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.34629,
-            "y": 0.21957
+            "x": 0.28146,
+            "y": 0.21949
           },
           "estimated_transform": {
-            "depth_m": 8.3029,
+            "depth_m": 8.5446,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
@@ -1360,11 +1359,11 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.38913,
-            "y": 0.21604
+            "x": 0.33886,
+            "y": 0.21599
           },
           "estimated_transform": {
-            "depth_m": 10.6348,
+            "depth_m": 10.8245,
             "yaw_deg": 90,
             "scale_m": [
               2.19,
@@ -1376,17 +1375,17 @@
         {
           "name": "west_maru",
           "shape": "cube",
-          "final_role": "좌측 기와 채 대청마루, 처마 밑으로 물러앉은 나무 바닥",
+          "final_role": "좌측 기와 채 툇마루, 처마 밑 기둥열 사이로 난 나무 바닥",
           "screen_position": {
-            "x": 0.278,
-            "y": 0.42427
+            "x": 0.3262,
+            "y": 0.42506
           },
           "estimated_transform": {
-            "depth_m": 8.7281,
+            "depth_m": 8.5278,
             "yaw_deg": 90,
             "scale_m": [
               6.911999999999999,
-              1.92,
+              0.9,
               0.12
             ]
           }
@@ -1396,15 +1395,15 @@
           "shape": "cube",
           "final_role": "좌측 기와 채 몸채 흙벽, 안쪽 방들",
           "screen_position": {
-            "x": 0.07329,
-            "y": 0.21926
+            "x": 0.12207,
+            "y": 0.21931
           },
           "estimated_transform": {
-            "depth_m": 9.7406,
+            "depth_m": 9.4081,
             "yaw_deg": 90,
             "scale_m": [
               7.055999999999999,
-              2.4,
+              3.9,
               2.4
             ]
           }
@@ -1978,11 +1977,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.61706,
+            "x": 0.63302,
             "y": 0.39697
           },
           "estimated_transform": {
-            "depth_m": 33.1955,
+            "depth_m": 33.3387,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -1996,11 +1995,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.62319,
+            "x": 0.63999,
             "y": 0.45931
           },
           "estimated_transform": {
-            "depth_m": 31.4963,
+            "depth_m": 31.6473,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -2014,11 +2013,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.63,
+            "x": 0.64773,
             "y": 0.52854
           },
           "estimated_transform": {
-            "depth_m": 29.8935,
+            "depth_m": 30.0525,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -2032,11 +2031,11 @@
           "shape": "cube",
           "final_role": "우측 기와 채 창호지 분합문 한 칸, 격자살이 비침",
           "screen_position": {
-            "x": 0.63761,
+            "x": 0.65638,
             "y": 0.60588
           },
           "estimated_transform": {
-            "depth_m": 28.4031,
+            "depth_m": 28.5704,
             "yaw_deg": -90,
             "scale_m": [
               2.19,
@@ -2048,17 +2047,17 @@
         {
           "name": "east_maru",
           "shape": "cube",
-          "final_role": "우측 기와 채 대청마루, 처마 밑으로 물러앉은 나무 바닥",
+          "final_role": "우측 기와 채 툇마루, 처마 밑 기둥열 사이로 난 나무 바닥",
           "screen_position": {
-            "x": 0.64237,
+            "x": 0.62941,
             "y": 0.52894
           },
           "estimated_transform": {
-            "depth_m": 31.88,
+            "depth_m": 31.759,
             "yaw_deg": -90,
             "scale_m": [
               9.216,
-              1.92,
+              0.9,
               0.12
             ]
           }
@@ -2068,15 +2067,15 @@
           "shape": "cube",
           "final_role": "우측 기와 채 몸채 흙벽, 안쪽 방들",
           "screen_position": {
-            "x": 0.70029,
+            "x": 0.68688,
             "y": 0.493
           },
           "estimated_transform": {
-            "depth_m": 31.4749,
+            "depth_m": 31.3059,
             "yaw_deg": -90,
             "scale_m": [
               9.408,
-              2.4,
+              3.9,
               2.4
             ]
           }
