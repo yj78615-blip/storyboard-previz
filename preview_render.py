@@ -49,9 +49,14 @@ EMISSION_STRENGTH = 2.0
 #                 asymmetric_wedge는 실제 z가 0.8유닛이라 보정하지 않으면 20% 낮아진다.
 SKILL_PRIMITIVE_UNITS = {
     "grid_plane":       (10.0, 10.0, 1.0),
-    "l_shape":          (2.0, 2.0, 3.0),
     "asymmetric_wedge": (1.0, 1.0, 1.0),
 }
+
+# l_shape 은 같은 shape 이라도 스케일 규약이 둘로 갈린다.
+#   캐릭터(char_*) : preview_adapter._human_scale() 이 키/L_SHAPE_UNIT_Z(=3.0) 를 싣는다
+#   소품(prop_*)   : scale_m 을 미터 그대로 싣는다 (cube/cylinder 와 같은 규약)
+# shape 만 보고 캐릭터 규약을 적용하면 l_shape 소품이 3배로 부푼다.
+CHAR_L_SHAPE_UNITS = (2.0, 2.0, 3.0)
 
 
 def hex_to_rgba(hex_str: str) -> tuple[float, float, float, float]:
@@ -152,13 +157,22 @@ def _local_size(obj) -> tuple[float, float, float]:
     return (max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs))
 
 
-def unit_fixup(shape: str, actual_size: tuple[float, float, float]) -> tuple[float, float, float]:
+def unit_fixup(shape: str, actual_size: tuple[float, float, float],
+               is_character: bool = False) -> tuple[float, float, float]:
     """spec이 전제한 스킬 프리미티브 크기 ÷ 실제 프리미티브 크기. (순수 함수)
 
     실제 크기를 런타임에 재서 넘기므로 proxy_library의 프리미티브가 바뀌어도 자동으로 따라간다.
     두께가 0인 축(예: grid_plane의 z)은 보정하지 않는다.
+
+    is_character: l_shape 의 스케일 규약이 캐릭터/소품에서 갈리므로 필요하다.
+    build_spec 이 캐릭터 id 를 char_ 로, 소품을 prop_ 으로 찍어주니 그걸로 구분한다.
     """
-    assumed = SKILL_PRIMITIVE_UNITS.get(shape)
+    if shape == "l_shape":
+        # 캐릭터는 스킬 규약(2x2x3 유닛), 소품은 미터 규약(1유닛).
+        # 소품도 무보정이면 안 된다 - l_shape 메시가 1.8 유닛이라 1.62m 가 2.92m 가 된다.
+        assumed = CHAR_L_SHAPE_UNITS if is_character else (1.0, 1.0, 1.0)
+    else:
+        assumed = SKILL_PRIMITIVE_UNITS.get(shape)
     if assumed is None:
         return (1.0, 1.0, 1.0)
     return tuple(
@@ -175,7 +189,8 @@ def _place_item(item: dict) -> None:
     obj.location = tuple(item["pos"])
     rot = item.get("rot_deg", [0.0, 0.0, 0.0])
     obj.rotation_euler = tuple(radians(float(d)) for d in rot)
-    fixup = unit_fixup(item["shape"], _local_size(obj))
+    fixup = unit_fixup(item["shape"], _local_size(obj),
+                       is_character=item["id"].startswith("char_"))
     obj.scale = tuple(s * f for s, f in zip(item["scale"], fixup))
     # Workbench는 obj.color를, EEVEE로 되돌릴 경우엔 머티리얼을 쓴다. 둘 다 채워둔다.
     obj.color = hex_to_rgba(item["color"])
@@ -339,8 +354,14 @@ def _demo():
     assert abs(l_h - 1.8) < 1e-9, f"l_shape 실제 높이가 바뀜: {l_h}"
 
     # 성인 1.75m: preview_adapter가 1.75/3.0=0.5833을 싣고, 보정 후 실제 1.75m가 되어야 함
-    fx = unit_fixup("l_shape", (1.0, 1.0, l_h))
+    fx = unit_fixup("l_shape", (1.0, 1.0, l_h), is_character=True)
     assert abs((1.75 / 3.0) * fx[2] * l_h - 1.75) < 1e-9, (fx, "성인 키가 1.75m가 아님")
+    # l_shape 소품(관객 무리 등)은 scale_m 이 미터라 캐릭터 규약을 적용하면 안 된다.
+    # 예전엔 shape 만 보고 캐릭터 규약을 써서 1.62m 관객이 4.86m 가 됐다.
+    fxp = unit_fixup("l_shape", (1.0, 1.0, l_h), is_character=False)
+    assert abs(1.62 * fxp[2] * l_h - 1.62) < 1e-9, (fxp, "l_shape 소품이 미터로 안 나옴")
+    assert fxp[2] != unit_fixup("l_shape", (1.0, 1.0, l_h), is_character=True)[2], \
+        "캐릭터와 소품 보정이 같으면 구분이 안 된 것"
     # HUMAN_XY_SCALE=0.15가 주석대로 "30cm 폭"이 되어야 함 (6cm 각목 방지)
     assert abs(0.15 * fx[0] * 1.0 - 0.30) < 1e-9, (fx, "캐릭터 폭이 30cm가 아님")
     assert abs(0.15 * fx[1] * 1.0 - 0.30) < 1e-9, (fx, "캐릭터 깊이가 30cm가 아님")
